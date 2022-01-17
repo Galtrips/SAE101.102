@@ -5,6 +5,7 @@
 #include <fstream>
 #include <ctime>
 #include <cstring>
+#include <SDL_image.h>
 
 using namespace std;
 
@@ -54,6 +55,8 @@ void croissance(SDL_Renderer* rendu, bambous tab[]) {
     SDL_RenderPresent(rendu);
 }
 
+void SDL_SetWindowIcon(SDL_Window* window, SDL_Surface* icon);
+
 int main(int argn, char* argv[]) {
 
     //ouverture de la SDL
@@ -64,7 +67,7 @@ int main(int argn, char* argv[]) {
 
 
     //on crée la fenêtre
-    SDL_Window* win = SDL_CreateWindow("Panda",
+    SDL_Window* win = SDL_CreateWindow("PandaCut",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         LARGEUR,
@@ -79,6 +82,14 @@ int main(int argn, char* argv[]) {
 
     if (win == NULL)
         cout << "erreur ouverture fenetre";
+
+    SDL_Surface* icon = SDL_LoadBMP("logo.bmp");
+    if (!icon)
+    {
+        printf("Erreur de chargement de l'image : %s", SDL_GetError());
+        return -1;
+    }
+    SDL_SetWindowIcon(win, icon);
 
     SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
     SDL_RenderClear(rendu);

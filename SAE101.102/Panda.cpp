@@ -12,6 +12,7 @@ using namespace std;
 const int LARGEUR = 1000; //largeur fenetre
 const int HAUTEUR = 700;  //hauteur fenetre
 const int nb_bambous = 8;
+int coPanda[nb_bambous];
 
 struct bambous
 {
@@ -97,28 +98,37 @@ void init_ligne_max(SDL_Renderer* rendu) {
     SDL_RenderDrawLine(rendu, 0, (65 * 2), LARGEUR, (65 * 2));
 }
 
-
-
 void texte(SDL_Renderer* rendu, TTF_Font* font) {
     SDL_Color rouge = { 255,0,0 }; //on définit une couleur de texte
     SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
 
     //on place le texte au point (100,100)
-    positionTexte.x = LARGEUR - 50;
-    positionTexte.y = (65 * 2) - 30;
+    positionTexte.x = LARGEUR - 28;
+    positionTexte.y = (65 * 2) - 15;
     //on crée une texture à partir du texte, de sa couleur, et de la fonte
     SDL_Texture* texture = loadText(rendu, "Max", rouge, font);
     //on maj le rectangle couvrant cette texture
     SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
     //si on veut modifier le cadre du texte
-    positionTexte.w *= 1;
-    positionTexte.h *= 1;
+    positionTexte.w *= 0.6;
+    positionTexte.h *= 0.6;
     //on copie la texture dans le rendu
     SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
     //on met à jour le rendu
     SDL_RenderPresent(rendu);
     //on détruit la texture
     SDL_DestroyTexture(texture);
+}
+
+void coordonéesPanda() {
+    for (int i = 1; i < nb_bambous; i++) {
+        coPanda[i-1] = 80 * i;
+    }
+}   
+
+void deplacement(SDL_Renderer* rendu, SDL_Rect dst) {
+    dst.x = coPanda[0]; 
+    SDL_RenderPresent(rendu);
 }
 
 int main(int argn, char* argv[]) {
@@ -167,6 +177,99 @@ int main(int argn, char* argv[]) {
     init_ligne_max(rendu);
     SDL_RenderPresent(rendu);
 
+    // on importe une image de sable
+    SDL_Surface* sable = IMG_Load("sable.png");
+    if (!sable)
+    {
+        cout << "Erreur de chargement de l'image ";
+        return -1;
+    }
+    SDL_Texture* pTextureImagesable = SDL_CreateTextureFromSurface(rendu, sable);
+    SDL_FreeSurface(sable);
+
+    SDL_Rect src3{ 0, 0, 0, 0 };
+    SDL_Rect dst3{ 0, HAUTEUR - 170,1000 , 270 };
+
+    SDL_QueryTexture(pTextureImagesable, nullptr, nullptr, &src3.w, &src3.h);
+    SDL_RenderCopy(rendu, pTextureImagesable, &src3, &dst3);
+    SDL_RenderPresent(rendu);
+
+
+    init(rendu);
+    texte(rendu, font);
+    init_ligne_max(rendu);
+    SDL_RenderPresent(rendu);
+
+
+
+    
+    
+    // on importe une image de ciel
+    SDL_Surface* ciel = IMG_Load("ciel1.png");
+    if (!ciel)
+    {
+        cout << "Erreur de chargement de l'image ";
+        return -1;
+    }
+    SDL_Texture* pTextureImageciel = SDL_CreateTextureFromSurface(rendu, ciel);
+    SDL_FreeSurface(ciel);
+
+    /*SDL_Rect posIng;
+    posIng.x = 500;
+    posIng.y = 50;*/
+    SDL_Rect src1{ 0, 0, 0, 0 };
+    SDL_Rect dst1{ 0,0, 1000, 400 };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImageciel, nullptr, nullptr, &src1.w, &src1.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImageciel, &src1, &dst1);
+    SDL_RenderPresent(rendu);
+
+    SDL_Surface* soleil = IMG_Load("soleil.png");
+    if (!soleil)
+    {
+        cout << "Erreur de chargement de l'image ";
+        return -1;
+    }
+    SDL_Texture* pTextureImageSoleil = SDL_CreateTextureFromSurface(rendu, soleil);
+    SDL_FreeSurface(soleil);
+
+    /*SDL_Rect posIng;
+    posIng.x = 500;
+    posIng.y = 50;*/
+    SDL_Rect src4{ 0, 0, 0, 0 };
+    SDL_Rect dst4{ 25, HAUTEUR - (HAUTEUR - 25), 110, 110 };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImageSoleil, nullptr, nullptr, &src4.w, &src4.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImageSoleil, &src4, &dst4);
+    SDL_RenderPresent(rendu);
+
+   
+    // on importe une image de maison
+    SDL_Surface* maison = IMG_Load("maison.png");
+    if (!maison)
+    {
+        cout << "Erreur de chargement de l'image ";
+        return -1;
+    }
+    SDL_Texture* pTextureImagemaison = SDL_CreateTextureFromSurface(rendu, maison);
+    SDL_FreeSurface(maison);
+
+    /*SDL_Rect posIng;
+    posIng.x = 500;
+    posIng.y = 50;*/
+    SDL_Rect src2{ 0, 0, 0, 0 };
+    SDL_Rect dst2{ 730,HAUTEUR - 186,300,200 };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImagemaison, nullptr, nullptr, &src2.w, &src2.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImagemaison, &src2, &dst2);
+    SDL_RenderPresent(rendu);
+
     // on importe une image
     SDL_Surface* image = IMG_Load("panda.png");
     if (!image)
@@ -178,16 +281,15 @@ int main(int argn, char* argv[]) {
     SDL_FreeSurface(image);
 
     SDL_Rect src{ 0, 0, 0, 0 };
-    SDL_Rect dst{ 650, HAUTEUR-50, 50, 50 };
+    SDL_Rect dst{ 810, HAUTEUR - 50, 50, 50 };
 
     /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
     SDL_QueryTexture(pTextureImage, nullptr, nullptr, &src.w, &src.h);
     //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
     SDL_RenderCopy(rendu, pTextureImage, &src, &dst);
-
     SDL_RenderPresent(rendu);
 
-
+    coordonéesPanda();
 
     bool continuer = true;
     int fullscreen = 0;
@@ -206,6 +308,9 @@ int main(int argn, char* argv[]) {
             if (event.key.keysym.sym == SDLK_RETURN) {
                 ajout(rendu);
                 SDL_RenderPresent(rendu);
+            }
+            if (event.key.keysym.sym == SDLK_m) {
+                //SDL_DestroyTexture();
             }
             break;
         }

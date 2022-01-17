@@ -10,6 +10,50 @@ using namespace std;
 
 const int LARGEUR = 1000; //largeur fenetre
 const int HAUTEUR = 500;  //hauteur fenetre
+const int nb_bambous = 6;
+
+struct bambous
+{
+    int taille[nb_bambous] = { 0 };
+    int croissance[nb_bambous] = { 10,3,4,2,6,1 };
+};
+
+bambous tab[nb_bambous];
+
+void init(SDL_Renderer* rendu) {
+    for (int i = 1; i < nb_bambous + 1; i++) {
+        SDL_Rect rect;
+        rect.x = 80 * i;
+        rect.w = 10;
+        rect.h = 30;
+        rect.y = HAUTEUR - rect.h;
+        SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
+        SDL_RenderFillRect(rendu, &rect);
+        SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
+        SDL_RenderDrawRect(rendu, &rect);
+        SDL_RenderPresent(rendu);
+    }
+}
+
+void init_croissances(bambous tab[]) {
+    for (int i = 0; i < nb_bambous; i++) {
+        *tab[i].croissance = *tab[i].croissance * 1000;
+    }
+}
+
+void croissance(SDL_Renderer* rendu, bambous tab[]) {
+    SDL_Delay(*tab[1].croissance);
+    SDL_Rect rect;
+    rect.x = 80;
+    rect.w = 10;
+    rect.h = 30;
+    rect.y = HAUTEUR - (rect.h * 2);
+    SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
+    SDL_RenderFillRect(rendu, &rect);
+    SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
+    SDL_RenderDrawRect(rendu, &rect);
+    SDL_RenderPresent(rendu);
+}
 
 int main(int argn, char* argv[]) {
 
@@ -29,11 +73,20 @@ int main(int argn, char* argv[]) {
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
     );
 
+    SDL_Renderer* rendu = SDL_CreateRenderer(
+        win,  //nom de la fenêtre
+        -1, //par défaut
+        SDL_RENDERER_ACCELERATED); //utilisation du GPU, valeur recommandée
+
     if (win == NULL)
         cout << "erreur ouverture fenetre";
 
-
-
+    SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
+    SDL_RenderClear(rendu);
+    SDL_RenderPresent(rendu);
+    init(rendu);
+    SDL_RenderPresent(rendu);
+    init_croissances(tab);
 
     bool continuer = true;
     int fullscreen = 0;
@@ -68,6 +121,7 @@ int main(int argn, char* argv[]) {
         }
     }
 
+    SDL_DestroyRenderer(rendu);
     SDL_DestroyWindow(win);
 
     //fermeture

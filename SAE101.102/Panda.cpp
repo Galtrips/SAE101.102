@@ -33,6 +33,17 @@ void init(SDL_Renderer* rendu) {
         SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
         SDL_RenderDrawRect(rendu, &rect);
         SDL_RenderPresent(rendu);
+
+        SDL_Rect rect2;
+        rect2.x = (80 * i) - 4;
+        rect2.w = 18;
+        rect2.h = 3;
+        rect2.y = HAUTEUR - ((tab[i - 1].croissance[i - 1] * 6) + 5);
+        SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
+        SDL_RenderFillRect(rendu, &rect2);
+        SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
+        SDL_RenderDrawRect(rendu, &rect2);
+        SDL_RenderPresent(rendu);
     }
 }
 
@@ -55,6 +66,28 @@ void croissance(SDL_Renderer* rendu, bambous tab[]) {
     SDL_RenderPresent(rendu);
 }
 
+void texte(SDL_Renderer* rendu, TTF_Font* font) {
+    SDL_Color rouge = { 255,0,0 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR - 50;
+    positionTexte.y = (65 * 2) - 30;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "Max", rouge, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 1;
+    positionTexte.h *= 1;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
+}
+
 void SDL_SetWindowIcon(SDL_Window* window, SDL_Surface* icon);
 
 int main(int argn, char* argv[]) {
@@ -72,7 +105,7 @@ int main(int argn, char* argv[]) {
         SDL_WINDOWPOS_CENTERED,
         LARGEUR,
         HAUTEUR,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_SHOWN
     );
 
     SDL_Renderer* rendu = SDL_CreateRenderer(
@@ -83,7 +116,7 @@ int main(int argn, char* argv[]) {
     if (win == NULL)
         cout << "erreur ouverture fenetre";
 
-    SDL_Surface* icon = SDL_LoadBMP("logo.bmp");
+    SDL_Surface* icon = IMG_Load("logo.png");
     if (!icon)
     {
         printf("Erreur de chargement de l'image : %s", SDL_GetError());
@@ -91,12 +124,40 @@ int main(int argn, char* argv[]) {
     }
     SDL_SetWindowIcon(win, icon);
 
+    TTF_Init();
+    TTF_Font* font = TTF_OpenFont("C:\\Windows\\Fonts\\calibri.ttf", 25);
+
     SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
     SDL_RenderClear(rendu);
     SDL_RenderPresent(rendu);
     init(rendu);
+    texte(rendu, font);
     init_ligne_max(rendu);
     SDL_RenderPresent(rendu);
+
+    // on importe une image
+    SDL_Surface* image = IMG_Load("panda.png");
+    if (!image)
+    {
+        cout << "Erreur de chargement de l'image ";
+        return -1;
+    }
+    SDL_Texture* pTextureImage = SDL_CreateTextureFromSurface(rendu, image);
+    SDL_FreeSurface(image);
+
+    /*SDL_Rect posIng;
+    posIng.x = 500;
+    posIng.y = 50;*/
+    SDL_Rect src{ 0, 0, 0, 0 };
+    SDL_Rect dst{ 650, HAUTEUR-50, 50, 50 };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImage, nullptr, nullptr, &src.w, &src.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImage, &src, &dst);
+
+    SDL_RenderPresent(rendu);
+
 
     bool continuer = true;
     int fullscreen = 0;
@@ -111,25 +172,11 @@ int main(int argn, char* argv[]) {
         case SDL_QUIT:
             continuer = false;
             break;
-
-        case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_F11) {
-
-                if (fullscreen == 0)
-                {
-                    fullscreen = 1;
-                    SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
-                }
-                else if (fullscreen == 1)
-                {
-                    fullscreen = 0;
-                    SDL_SetWindowFullscreen(win, 0);
-                }
-
-            }
-            break;
         }
     }
+
+    TTF_CloseFont(font); //on ferme la font
+    TTF_Quit(); //on quitte la TTF
 
     SDL_DestroyRenderer(rendu);
     SDL_DestroyWindow(win);

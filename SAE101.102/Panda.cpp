@@ -19,7 +19,10 @@ struct bambous
     int taille;
     int croissance;
 };
-
+int maxligne = 1;
+int minligne = 0;
+int derligne = 0;
+int taille;
 bambous tab[nb_bambous];
 
 void init_croissance() {
@@ -63,39 +66,75 @@ void init(SDL_Renderer* rendu) {
     }
 }
 
+void init_ligne_max(SDL_Renderer* rendu, int taille) {
+
+    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 255);
+    SDL_RenderDrawLine(rendu, 0, HAUTEUR - taille, LARGEUR, HAUTEUR - taille);
+    derligne = HAUTEUR - taille;
+
+}
+
+void ligne_delete(SDL_Renderer* rendu) {
+    SDL_SetRenderDrawColor(rendu, 255, 255, 255, 0);
+    SDL_RenderDrawLine(rendu, 0, derligne, LARGEUR, derligne);
+    SDL_RenderPresent(rendu);
+}
+
 void ajout (SDL_Renderer* rendu) {
+    SDL_Rect rect;
+    SDL_Rect rect2;
+    bool valider = false;
+
     for (int i = 1; i < nb_bambous + 1; i++) {
         if (tab[i - 1].taille + ((tab[i - 1].croissance * 6) + 5) < HAUTEUR - (65 * 2)) {
-            SDL_Rect rect;
+               
+            
+
             rect.x = 80 * i;
             rect.w = 10;
             rect.h = (tab[i - 1].croissance * 6) + 5;
             rect.y = HAUTEUR - tab[i - 1].taille - ((tab[i - 1].croissance * 6) + 5);
+            
+
+           
+            rect2.x = (80 * i) - 4;
+            rect2.w = 18;
+            rect2.h = 3;
+            rect2.y = HAUTEUR - ((tab[i - 1].croissance * 6) + 5 + tab[i - 1].taille);
+            
+            
+
+            tab[i - 1].taille += rect.h;
+
+            taille = tab[i - 1].taille;
+            if (maxligne < taille) {
+
+                maxligne = taille;
+          
+            }
+         
             SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
             SDL_RenderFillRect(rendu, &rect);
             SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
             SDL_RenderDrawRect(rendu, &rect);
             SDL_RenderPresent(rendu);
 
-            SDL_Rect rect2;
-            rect2.x = (80 * i) - 4;
-            rect2.w = 18;
-            rect2.h = 3;
-            rect2.y = HAUTEUR - ((tab[i - 1].croissance * 6) + 5 + tab[i - 1].taille);
             SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
             SDL_RenderFillRect(rendu, &rect2);
             SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
             SDL_RenderDrawRect(rendu, &rect2);
+            
             SDL_RenderPresent(rendu);
-
-            tab[i - 1].taille += rect.h;
         }
+        
     }
-}
+    if (maxligne >= taille) {
 
-void init_ligne_max(SDL_Renderer* rendu) {
-    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 255);
-    SDL_RenderDrawLine(rendu, 0, (65 * 2), LARGEUR, (65 * 2));
+        init_ligne_max(rendu, maxligne + 1);
+
+    }
+    SDL_RenderPresent(rendu);
+    
 }
 
 void texte(SDL_Renderer* rendu, TTF_Font* font) {
@@ -174,7 +213,6 @@ int main(int argn, char* argv[]) {
     init_croissance();
     init(rendu);
     texte(rendu, font);
-    init_ligne_max(rendu);
     SDL_RenderPresent(rendu);
 
     // on importe une image de sable
@@ -306,8 +344,8 @@ int main(int argn, char* argv[]) {
             break;
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_RETURN) {
+                ligne_delete(rendu);
                 ajout(rendu);
-                SDL_RenderPresent(rendu);
             }
             if (event.key.keysym.sym == SDLK_m) {
                 //SDL_DestroyTexture();

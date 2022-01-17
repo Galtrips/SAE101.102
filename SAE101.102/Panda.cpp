@@ -15,18 +15,31 @@ const int nb_bambous = 8;
 
 struct bambous
 {
-    int taille[nb_bambous] = { 0 };
-    int croissance[nb_bambous] = { 1,9,3,10,5,6,7,8 };
+    int taille;
+    int croissance;
 };
 
 bambous tab[nb_bambous];
+
+void init_croissance() {
+
+    tab[0].croissance = 1;
+    tab[1].croissance = 9;
+    tab[2].croissance = 3;
+    tab[3].croissance = 10;
+    tab[4].croissance = 5;
+    tab[5].croissance = 6;
+    tab[6].croissance = 7;
+    tab[7].croissance = 8;
+
+}
 
 void init(SDL_Renderer* rendu) {
     for (int i = 1; i < nb_bambous + 1; i++) {
         SDL_Rect rect;
         rect.x = 80 * i;
         rect.w = 10;
-        rect.h = (tab[i - 1].croissance[i - 1]*6)+5;
+        rect.h = (tab[i - 1].croissance*6)+5;
         rect.y = HAUTEUR - rect.h;
         SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
         SDL_RenderFillRect(rendu, &rect);
@@ -34,11 +47,13 @@ void init(SDL_Renderer* rendu) {
         SDL_RenderDrawRect(rendu, &rect);
         SDL_RenderPresent(rendu);
 
+        tab[i-1].taille = rect.h;
+
         SDL_Rect rect2;
         rect2.x = (80 * i) - 4;
         rect2.w = 18;
         rect2.h = 3;
-        rect2.y = HAUTEUR - ((tab[i - 1].croissance[i - 1] * 6) + 5);
+        rect2.y = HAUTEUR - ((tab[i - 1].croissance * 6) + 5);
         SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
         SDL_RenderFillRect(rendu, &rect2);
         SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
@@ -47,24 +62,42 @@ void init(SDL_Renderer* rendu) {
     }
 }
 
+void ajout (SDL_Renderer* rendu) {
+    for (int i = 1; i < nb_bambous + 1; i++) {
+        if (tab[i - 1].taille + ((tab[i - 1].croissance * 6) + 5) < HAUTEUR - (65 * 2)) {
+            SDL_Rect rect;
+            rect.x = 80 * i;
+            rect.w = 10;
+            rect.h = (tab[i - 1].croissance * 6) + 5;
+            rect.y = HAUTEUR - tab[i - 1].taille - ((tab[i - 1].croissance * 6) + 5);
+            SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
+            SDL_RenderFillRect(rendu, &rect);
+            SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
+            SDL_RenderDrawRect(rendu, &rect);
+            SDL_RenderPresent(rendu);
+
+            SDL_Rect rect2;
+            rect2.x = (80 * i) - 4;
+            rect2.w = 18;
+            rect2.h = 3;
+            rect2.y = HAUTEUR - ((tab[i - 1].croissance * 6) + 5 + tab[i - 1].taille);
+            SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
+            SDL_RenderFillRect(rendu, &rect2);
+            SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
+            SDL_RenderDrawRect(rendu, &rect2);
+            SDL_RenderPresent(rendu);
+
+            tab[i - 1].taille += rect.h;
+        }
+    }
+}
+
 void init_ligne_max(SDL_Renderer* rendu) {
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 255);
     SDL_RenderDrawLine(rendu, 0, (65 * 2), LARGEUR, (65 * 2));
 }
 
-void croissance(SDL_Renderer* rendu, bambous tab[]) {
-    SDL_Delay(*tab[1].croissance);
-    SDL_Rect rect;
-    rect.x = 80;
-    rect.w = 10;
-    rect.h = 30;
-    rect.y = HAUTEUR - (rect.h * 2);
-    SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
-    SDL_RenderFillRect(rendu, &rect);
-    SDL_SetRenderDrawColor(rendu, 0, 102, 0, 255);
-    SDL_RenderDrawRect(rendu, &rect);
-    SDL_RenderPresent(rendu);
-}
+
 
 void texte(SDL_Renderer* rendu, TTF_Font* font) {
     SDL_Color rouge = { 255,0,0 }; //on définit une couleur de texte
@@ -88,8 +121,6 @@ void texte(SDL_Renderer* rendu, TTF_Font* font) {
     SDL_DestroyTexture(texture);
 }
 
-void SDL_SetWindowIcon(SDL_Window* window, SDL_Surface* icon);
-
 int main(int argn, char* argv[]) {
 
     //ouverture de la SDL
@@ -100,7 +131,7 @@ int main(int argn, char* argv[]) {
 
 
     //on crée la fenêtre
-    SDL_Window* win = SDL_CreateWindow("PandaCut",
+    SDL_Window* win = SDL_CreateWindow("Panda",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         LARGEUR,
@@ -130,6 +161,7 @@ int main(int argn, char* argv[]) {
     SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
     SDL_RenderClear(rendu);
     SDL_RenderPresent(rendu);
+    init_croissance();
     init(rendu);
     texte(rendu, font);
     init_ligne_max(rendu);
@@ -145,9 +177,6 @@ int main(int argn, char* argv[]) {
     SDL_Texture* pTextureImage = SDL_CreateTextureFromSurface(rendu, image);
     SDL_FreeSurface(image);
 
-    /*SDL_Rect posIng;
-    posIng.x = 500;
-    posIng.y = 50;*/
     SDL_Rect src{ 0, 0, 0, 0 };
     SDL_Rect dst{ 650, HAUTEUR-50, 50, 50 };
 
@@ -157,6 +186,7 @@ int main(int argn, char* argv[]) {
     SDL_RenderCopy(rendu, pTextureImage, &src, &dst);
 
     SDL_RenderPresent(rendu);
+
 
 
     bool continuer = true;
@@ -171,6 +201,12 @@ int main(int argn, char* argv[]) {
 
         case SDL_QUIT:
             continuer = false;
+            break;
+        case SDL_KEYDOWN:
+            if (event.key.keysym.sym == SDLK_RETURN) {
+                ajout(rendu);
+                SDL_RenderPresent(rendu);
+            }
             break;
         }
     }

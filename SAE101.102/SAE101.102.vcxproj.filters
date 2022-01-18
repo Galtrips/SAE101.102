@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Panda.cpp">
+    <ClCompile Include="config_sdl.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="config_sdl.cpp">
+    <ClCompile Include="Panda.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

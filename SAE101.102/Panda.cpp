@@ -19,7 +19,7 @@ SDL_Texture* pTextureImage;
 const int LARGEUR = 1000; //largeur fenetre
 const int LARGEUR_TOTALE = 1250;//largeur fenetre
 const int HAUTEUR = 700;  //hauteur fenetre
-const int nb_bambous = 8;
+int nb_bambous = 8;
 bool Menu = false;
 int jours = 0;
 int nbCoupe = 0;
@@ -38,8 +38,8 @@ struct bambous
 };
 
 
-bambous tab[nb_bambous];
-int coPanda[nb_bambous + 1];
+bambous tab[8];
+int coPanda[9];
 
 void logo(SDL_Window* win) {
 
@@ -81,6 +81,23 @@ void config(SDL_Renderer* rendu) {
     SDL_RenderCopy(rendu, pTextureImageconfig, &src1, &dst1);
     SDL_RenderPresent(rendu);
 }
+
+void pause(SDL_Renderer* rendu) {
+    SDL_Surface* pause = IMG_Load("pause.png");
+
+    SDL_Texture* pTextureImagepause = SDL_CreateTextureFromSurface(rendu, pause);
+    SDL_FreeSurface(pause);
+
+    SDL_Rect src1{ 0, 0, 0, 0 };
+    SDL_Rect dst1{ 0,0, LARGEUR_TOTALE, HAUTEUR };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImagepause, nullptr, nullptr, &src1.w, &src1.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImagepause, &src1, &dst1);
+    SDL_RenderPresent(rendu);
+}
+
 
 void coordonéesPanda() {
     for (int i = 1; i < nb_bambous + 2; i++) {
@@ -529,6 +546,10 @@ int main(int argn, char* argv[]) {
                 croissance(rendu, font);
             }
 
+            if (event.key.keysym.sym == SDLK_ESCAPE) {
+                pause(rendu);
+            }
+
             break;
 
         case SDL_MOUSEBUTTONUP://appui souris
@@ -554,6 +575,105 @@ int main(int argn, char* argv[]) {
                     Menu = false;
                     menu(rendu);
 
+                }
+
+                //Config de bambou
+
+                if (event.button.x > 550 && event.button.x < 570 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 550;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 1;
+                }
+                if (event.button.x > 620 && event.button.x < 650 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline1;
+                    underline1.x = 625;
+                    underline1.w = 19;
+                    underline1.h = 5;
+                    underline1.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline1);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 2;
+                }
+                if (event.button.x > 700 && event.button.x < 725 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 704;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 3;
+                }
+                if (event.button.x > 780 && event.button.x < 803 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 783;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 4;
+                }
+                if (event.button.x > 860 && event.button.x < 883 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 862;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 5;
+                }
+                if (event.button.x > 940 && event.button.x < 963 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 943;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 6;
+                }
+                if (event.button.x > 1020 && event.button.x < 1043 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 1021;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 7;
+                }
+                if (event.button.x > 1100 && event.button.x < 1123 && event.button.y>181 && event.button.y < 215) {
+                    config(rendu);
+                    SDL_Rect underline;
+                    underline.x = 1101;
+                    underline.w = 19;
+                    underline.h = 5;
+                    underline.y = 217;
+                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                    SDL_RenderFillRect(rendu, &underline);
+                    SDL_RenderPresent(rendu);
+                    nb_bambous = 8;
                 }
             }
             break;

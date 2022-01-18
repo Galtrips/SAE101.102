@@ -29,6 +29,8 @@ const int nb_bambous = 8;
 bool Menu = false;
 int jours = 0;
 int maxi = 0;
+int maxiBambou = 0;
+int choix = 1;
 
 struct bambous
 {
@@ -115,10 +117,6 @@ void affichage_panda(SDL_Renderer* rendu, int x) {
     image = IMG_Load("panda.png");
     pTextureImage = SDL_CreateTextureFromSurface(rendu, image);
     SDL_FreeSurface(image);
-
-    if (x > 9) {
-        x = 810;
-    }
 
     SDL_Rect src{ 0, 0, 0, 0 };
     SDL_Rect dst{ x, HAUTEUR - 50, 50, 50 };
@@ -274,12 +272,25 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     bambou(rendu, font);
     SDL_RenderPresent(rendu);
 
-    if (jours == 0) {
-        affichage_panda(rendu, 10);
+    if (jours == 0 ) {
+        affichage_panda(rendu, 810);
     }
 }
 
+void choix1() {
+    maxiBambou = 0;
+    if (jours > 0) {
 
+        for (int i = 0; i < nb_bambous; i++) {
+            if (tab[i].taille > tab[maxiBambou].taille) {
+                maxiBambou = i;
+            }
+        }
+
+        tab[maxiBambou].taille = 0;
+        tab[maxiBambou].cpt = 0;
+    }
+}
 
 void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
@@ -291,7 +302,12 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     }
 
     affichage(rendu, font);
+    jours++;
 
+    if (choix == 1) {
+        affichage_panda(rendu, coPanda[maxiBambou]);
+        choix1();
+    }
 }
 
 
@@ -329,16 +345,9 @@ int main(int argn, char* argv[]) {
     init_croissance();
     coordonéesPanda();
 
-
-
     menu(rendu, font);
     
 
-  
-    
-  
-
-  
     int cpt = 0;
     bool continuer = true;
     int fullscreen = 0;

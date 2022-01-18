@@ -24,6 +24,7 @@ SDL_Surface* maison;
 SDL_Texture* pTextureImagemaison;
 
 const int LARGEUR = 1000; //largeur fenetre
+const int LARGEUR_TOTALE = 1250;//largeur fenetre
 const int HAUTEUR = 700;  //hauteur fenetre
 const int nb_bambous = 8;
 bool Menu = false;
@@ -55,50 +56,22 @@ void logo(SDL_Window* win) {
 }
 
 void menu(SDL_Renderer* rendu, TTF_Font* font) {
-    SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255);
-    SDL_RenderClear(rendu);
+    SDL_Surface* menus = IMG_Load("menu.png");
+    if (!menus)
+    {
+        cout << "Erreur de chargement de l'image ";
+    }
+    SDL_Texture* pTextureImagemenu = SDL_CreateTextureFromSurface(rendu, menus);
+    SDL_FreeSurface(menus);
+
+    SDL_Rect src1{ 0, 0, 0, 0 };
+    SDL_Rect dst1{ 0,0, LARGEUR_TOTALE, HAUTEUR };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImagemenu, nullptr, nullptr, &src1.w, &src1.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImagemenu, &src1, &dst1);
     SDL_RenderPresent(rendu);
-
-    title.x = 500 - 100;
-    title.w = 200;
-    title.h = 60;
-    title.y = 450;
-    SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
-    SDL_RenderFillRect(rendu, &title);
-
-    SDL_Color white = { 255,255,255 }; //on définit une couleur de texte
-    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
-    //on place le texte au point (100,100)
-    positionTexte.x = 500 - 25;
-    positionTexte.y = 425 + 43;
-    //on crée une texture à partir du texte, de sa couleur, et de la fonte
-    SDL_Texture* texture = loadText(rendu, "START", white, font);
-    //on maj le rectangle couvrant cette texture
-    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
-    //si on veut modifier le cadre du texte
-    positionTexte.w *= 1;
-    positionTexte.h *= 1;
-    //on copie la texture dans le rendu
-    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
-
-    SDL_Color white1 = { 255,255,255 }; //on définit une couleur de texte
-    SDL_Rect positionTexte1; //rectangle définissant le positionnement du texte, et sa taille
-    //on place le texte au point (100,100)
-    positionTexte1.x = 250;
-    positionTexte1.y = (HAUTEUR / 2) - 100;
-    //on crée une texture à partir du texte, de sa couleur, et de la fonte
-    SDL_Texture* texture1 = loadText(rendu, "PandaBambou2.0", white, font);
-    //on maj le rectangle couvrant cette texture
-    SDL_QueryTexture(texture1, NULL, NULL, &positionTexte1.w, &positionTexte1.h);
-    //si on veut modifier le cadre du texte
-    positionTexte1.w *= 3;
-    positionTexte1.h *= 3;
-    //on copie la texture dans le rendu
-    SDL_RenderCopy(rendu, texture1, NULL, &positionTexte1);
-    //on met à jour le rendu
-    SDL_RenderPresent(rendu);
-    //on détruit la texture
-    SDL_DestroyTexture(texture1);
 }
 
 void coordonéesPanda() {
@@ -110,6 +83,120 @@ void coordonéesPanda() {
             coPanda[i - 1] = LARGEUR - 70;
         }
     }
+}
+
+void texteLégende(SDL_Renderer* rendu, TTF_Font* font) {
+
+    SDL_Color blanche = { 255,255,255 }; //on définit une couleur de texte
+
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR_TOTALE - 185;
+    positionTexte.y = 50;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "Légende :", blanche, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 1.5;
+    positionTexte.h *= 1.5;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
+}
+
+void texteHautMax(SDL_Renderer* rendu, TTF_Font* font) {
+    SDL_Color vert = { 85, 255, 51 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR_TOTALE - 160;
+    positionTexte.y = 150;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "Haut max", vert, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 0.8;
+    positionTexte.h *= 0.8;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
+}
+
+void texteHautMoy(SDL_Renderer* rendu, TTF_Font* font) {
+    SDL_Color violet = { 127,0,255 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR_TOTALE - 160;
+    positionTexte.y = 200;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "Haut moy", violet, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 0.8;
+    positionTexte.h *= 0.8;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
+}
+
+void texteHautMin(SDL_Renderer* rendu, TTF_Font* font) {
+    SDL_Color rouge = { 255,0,0 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR_TOTALE - 160;
+    positionTexte.y = 250;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "Haut min", rouge, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 0.8;
+    positionTexte.h *= 0.8;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
+}
+
+
+
+void texteNBcoupe(SDL_Renderer* rendu, TTF_Font* font) {
+    SDL_Color bleu = { 0,0,255 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR_TOTALE - 185;
+    positionTexte.y = 300;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "nombre de coupe", bleu, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 0.8;
+    positionTexte.h *= 0.8;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
 }
 
 void affichage_panda(SDL_Renderer* rendu, int x) {
@@ -267,6 +354,21 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     rect.y = HAUTEUR - 8;
     SDL_SetRenderDrawColor(rendu, 0, 30, 164, 255);
     SDL_RenderFillRect(rendu, &rect);
+
+    // créé le rectangle noir
+    SDL_Rect rectt;
+    rectt.x = LARGEUR;
+    rectt.y = 0;
+    rectt.h = HAUTEUR;
+    rectt.w = 300;
+    // Dessin du rectangle
+    SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255);
+    SDL_RenderFillRect(rendu, &rectt);
+    texteLégende(rendu, font);
+    texteHautMax(rendu, font);
+    texteHautMoy(rendu, font);
+    texteHautMin(rendu, font);
+    texteNBcoupe(rendu, font);
   
 
     bambou(rendu, font);
@@ -301,8 +403,9 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         }
     }
 
-    affichage(rendu, font);
     jours++;
+    affichage(rendu, font);
+    
 
     if (choix == 1) {
         affichage_panda(rendu, coPanda[maxiBambou]);
@@ -325,7 +428,7 @@ int main(int argn, char* argv[]) {
     SDL_Window* win = SDL_CreateWindow("Panda",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        LARGEUR,
+        LARGEUR_TOTALE,
         HAUTEUR,
         SDL_WINDOW_SHOWN
     );
@@ -371,16 +474,22 @@ int main(int argn, char* argv[]) {
 
         case SDL_MOUSEBUTTONUP://appui souris
             if (event.button.button == SDL_BUTTON_LEFT) {//si on clique bouton gauche
-                if (event.button.x > 400 && event.button.x < 600 && event.button.y>450 && event.button.y < 510) {
+                if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>380 && event.button.y < 380 + 82) {
                     if (Menu == false) {
 
                         Menu = true;
                         affichage(rendu, font);
                         SDL_RenderPresent(rendu);
+
                     }
-                    break;
+                }
+                else if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>537 && event.button.y < 537 + 82) {
+                    if (Menu == false) {
+                        continuer = false;
+                    }
                 }
             }
+            break;
         }
     }
 

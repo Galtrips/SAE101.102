@@ -546,7 +546,7 @@ int main(int argn, char* argv[]) {
                 croissance(rendu, font);
             }
 
-            if (event.key.keysym.sym == SDLK_ESCAPE) {
+            if (event.key.keysym.sym == SDLK_ESCAPE && Menu == false) {
                 pause(rendu);
             }
 

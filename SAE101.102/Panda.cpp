@@ -20,7 +20,7 @@ const int LARGEUR = 1000; //largeur fenetre
 const int LARGEUR_TOTALE = 1250;//largeur fenetre
 const int HAUTEUR = 700;  //hauteur fenetre
 int nb_bambous = 8;
-bool Menu = false;
+bool Menu = true;
 int jours = 0;
 int nbCoupe = 0;
 int maxi = 0;
@@ -554,19 +554,22 @@ int main(int argn, char* argv[]) {
 
         case SDL_MOUSEBUTTONUP://appui souris
             if (event.button.button == SDL_BUTTON_LEFT) {//si on clique bouton gauche
+                //Bouton Play menu
                 if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>380 && event.button.y < 380 + 82) {
-                    
-                        Menu = true;
+                    if (Menu == true) {
+                        Menu = false;
                         affichage(rendu, font);
                         SDL_RenderPresent(rendu);
 
-                    
+                    }
                 }
+                //Bouton exit menu
                 if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>537 && event.button.y < 537 + 82) {
-                    if (Menu == false) {
+                    if (Menu == true) {
                         continuer = false;
                     }
                 }
+                //Bouton config menu
                 if (event.button.x > 1054 && event.button.x < 1054 + 136 && event.button.y>167 && event.button.y < 167 + 48) {
                     config(rendu);
                 }

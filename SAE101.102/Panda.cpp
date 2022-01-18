@@ -32,6 +32,7 @@ int jours = 0;
 int maxi = 0;
 int maxiBambou = 0;
 int choix = 1;
+bool boucle = false;
 
 struct bambous
 {
@@ -413,8 +414,6 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     }
 }
 
-
-
 int main(int argn, char* argv[]) {
 
     //ouverture de la SDL
@@ -453,13 +452,15 @@ int main(int argn, char* argv[]) {
 
     int cpt = 0;
     bool continuer = true;
-    int fullscreen = 0;
+   
+
     SDL_Event event;
+    SDL_Event events;
 
     while (continuer) {
 
         SDL_WaitEvent(&event);
-
+        
         switch (event.type) {
 
         case SDL_QUIT:
@@ -470,8 +471,34 @@ int main(int argn, char* argv[]) {
 
                 croissance(rendu, font);
             }
-       
+            if (event.key.keysym.sym == SDLK_r) {
 
+                for (int i = 0; i < nb_bambous; i++) {
+                    tab[i].taille = 0;
+                    jours = 0;
+                    tab[i].cpt = 0;      
+                }
+                affichage(rendu, font);
+            }
+            if (event.key.keysym.sym == SDLK_RSHIFT) {
+
+                boucle = true;
+                while (boucle == true){
+                    SDL_PollEvent(&events);
+                    SDL_Delay(600);
+                    if (events.key.keysym.sym == SDLK_s) {
+                        boucle = false;
+                    }
+                    else {
+                        croissance(rendu, font);
+                    }
+             
+                }
+  
+               
+            }
+            break;
+       
         case SDL_MOUSEBUTTONUP://appui souris
             if (event.button.button == SDL_BUTTON_LEFT) {//si on clique bouton gauche
                 if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>380 && event.button.y < 380 + 82) {
@@ -490,6 +517,7 @@ int main(int argn, char* argv[]) {
                 }
             }
             break;
+
         }
     }
 

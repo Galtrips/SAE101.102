@@ -14,14 +14,7 @@ SDL_Rect bam2;
 SDL_Rect title;
 SDL_Surface* image;
 SDL_Texture* pTextureImage;
-SDL_Surface* sable;
-SDL_Texture* pTextureImagesable;
-SDL_Surface* ciel;
-SDL_Texture* pTextureImageciel;
-SDL_Surface* soleil;
-SDL_Texture* pTextureImageSoleil;
-SDL_Surface* maison;
-SDL_Texture* pTextureImagemaison;
+
 
 const int LARGEUR = 1000; //largeur fenetre
 const int LARGEUR_TOTALE = 1250;//largeur fenetre
@@ -56,22 +49,33 @@ void logo(SDL_Window* win) {
     SDL_SetWindowIcon(win, icon);
 }
 
-void menu(SDL_Renderer* rendu, TTF_Font* font) {
+void menu(SDL_Renderer* rendu) {
     SDL_Surface* menus = IMG_Load("menu.png");
-    if (!menus)
-    {
-        cout << "Erreur de chargement de l'image ";
-    }
+
     SDL_Texture* pTextureImagemenu = SDL_CreateTextureFromSurface(rendu, menus);
     SDL_FreeSurface(menus);
 
     SDL_Rect src1{ 0, 0, 0, 0 };
     SDL_Rect dst1{ 0,0, LARGEUR_TOTALE, HAUTEUR };
 
-    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
     SDL_QueryTexture(pTextureImagemenu, nullptr, nullptr, &src1.w, &src1.h);
-    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
     SDL_RenderCopy(rendu, pTextureImagemenu, &src1, &dst1);
+    SDL_RenderPresent(rendu);
+}
+
+void config(SDL_Renderer* rendu) {
+    SDL_Surface* config = IMG_Load("config.png");
+
+    SDL_Texture* pTextureImageconfig = SDL_CreateTextureFromSurface(rendu, config);
+    SDL_FreeSurface(config);
+
+    SDL_Rect src1{ 0, 0, 0, 0 };
+    SDL_Rect dst1{ 0,0, LARGEUR_TOTALE, HAUTEUR };
+
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImageconfig, nullptr, nullptr, &src1.w, &src1.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImageconfig, &src1, &dst1);
     SDL_RenderPresent(rendu);
 }
 
@@ -240,17 +244,17 @@ void init_ligne_max(SDL_Renderer* rendu, int taille, TTF_Font* font) {
     //on place le texte au point (100,100)
     positionTexte.x = LARGEUR - 28;
     positionTexte.y = HAUTEUR - taille - 15;
-   
+
     SDL_Texture* texture = loadText(rendu, "Max", rouge, font);
-   
+
     SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
-  
+
     positionTexte.w *= 0.6;
     positionTexte.h *= 0.6;
 
     SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
 
- 
+
     SDL_DestroyTexture(texture);
 
 }
@@ -258,7 +262,7 @@ void init_ligne_max(SDL_Renderer* rendu, int taille, TTF_Font* font) {
 void bambou(SDL_Renderer* rendu, TTF_Font* font) {
 
     for (int i = 1; i < nb_bambous + 1; i++) {
-     
+
         bam1.x = 80 * i;
         bam1.w = 10;
         bam1.h = -(tab[i - 1].taille);
@@ -274,12 +278,12 @@ void bambou(SDL_Renderer* rendu, TTF_Font* font) {
         SDL_RenderDrawRect(rendu, &bam1);
         SDL_RenderPresent(rendu);
 
-        for (int j = 1; j < (tab[i-1].cpt) + 1; j++) {
+        for (int j = 1; j < (tab[i - 1].cpt) + 1; j++) {
 
             bam2.x = (80 * i) - 4;
             bam2.w = 18;
             bam2.h = 3;
-            bam2.y = HAUTEUR - ((((tab[i-1].croissance * 6) +5) * j) + 11);
+            bam2.y = HAUTEUR - ((((tab[i - 1].croissance * 6) + 5) * j) + 11);
 
             SDL_SetRenderDrawColor(rendu, 106, 164, 30, 255);
             SDL_RenderFillRect(rendu, &bam2);
@@ -300,83 +304,34 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
     SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
     SDL_RenderClear(rendu);
-    // on importe une image de sable
-    sable = IMG_Load("sable.png");
-    pTextureImagesable = SDL_CreateTextureFromSurface(rendu, sable);
-    SDL_FreeSurface(sable);
-
-
-    SDL_Rect src3{ 0, 0, 0, 0 };
-    SDL_Rect dst3{ 0, HAUTEUR - 170,1000 , 270 };
-    SDL_QueryTexture(pTextureImagesable, nullptr, nullptr, &src3.w, &src3.h);
-    SDL_RenderCopy(rendu, pTextureImagesable, &src3, &dst3);
-    SDL_DestroyTexture(pTextureImagesable);
-    // on importe une image de ciel
-    ciel = IMG_Load("ciel1.png");
-    pTextureImageciel = SDL_CreateTextureFromSurface(rendu, ciel);
-    SDL_FreeSurface(ciel);
-
-
-    SDL_Rect src1{ 0, 0, 0, 0 };
-    SDL_Rect dst1{ 0,0, 1000, 400 };
-
-    SDL_QueryTexture(pTextureImageciel, nullptr, nullptr, &src1.w, &src1.h);
-    SDL_RenderCopy(rendu, pTextureImageciel, &src1, &dst1);
-    SDL_DestroyTexture(pTextureImageciel);
-
-
-    soleil = IMG_Load("soleil.png");
-    pTextureImageSoleil = SDL_CreateTextureFromSurface(rendu, soleil);
-    SDL_FreeSurface(soleil);
-    SDL_Rect src4{ 0, 0, 0, 0 };
-    SDL_Rect dst4{ 25, HAUTEUR - (HAUTEUR - 25), 110, 110 };
-    SDL_QueryTexture(pTextureImageSoleil, nullptr, nullptr, &src4.w, &src4.h);
-    SDL_RenderCopy(rendu, pTextureImageSoleil, &src4, &dst4);
-    SDL_DestroyTexture(pTextureImageSoleil);
-
-
 
     // on importe une image de maison
-    maison = IMG_Load("maison.png");
-    pTextureImagemaison = SDL_CreateTextureFromSurface(rendu, maison);
-    SDL_FreeSurface(maison);
+    SDL_Surface* fond = IMG_Load("fond.png");
+    SDL_Texture* pTextureImagefond = SDL_CreateTextureFromSurface(rendu, fond);
+    SDL_FreeSurface(fond);
+
     SDL_Rect src2{ 0, 0, 0, 0 };
-    SDL_Rect dst2{ 730,HAUTEUR - 186,300,200 };
-    SDL_QueryTexture(pTextureImagemaison, nullptr, nullptr, &src2.w, &src2.h);
-    SDL_RenderCopy(rendu, pTextureImagemaison, &src2, &dst2);
-    SDL_DestroyTexture(pTextureImagemaison);
+    SDL_Rect dst2{ 0,0,LARGEUR_TOTALE,HAUTEUR };
 
-    SDL_RenderPresent(rendu);
+    /*SDL_QueryTexture(pTextureImage, nullptr, nullptr, &posIng.w, &posIng.h);*/
+    SDL_QueryTexture(pTextureImagefond, nullptr, nullptr, &src2.w, &src2.h);
+    //SDL_RenderCopy(rendu, pTextureImage, nullptr, &posIng); // Affiche ma texture sur touts l'écran
+    SDL_RenderCopy(rendu, pTextureImagefond, &src2, &dst2);
 
-    SDL_Rect rect;
-    rect.x = LARGEUR - 70;
-    rect.w = 50;
-    rect.h = 8;
-    rect.y = HAUTEUR - 8;
-    SDL_SetRenderDrawColor(rendu, 0, 30, 164, 255);
-    SDL_RenderFillRect(rendu, &rect);
 
-    // créé le rectangle noir
-    SDL_Rect rectt;
-    rectt.x = LARGEUR;
-    rectt.y = 0;
-    rectt.h = HAUTEUR;
-    rectt.w = 300;
-    // Dessin du rectangle
-    SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255);
-    SDL_RenderFillRect(rendu, &rectt);
+
     texteLégende(rendu, font);
     texteHautMax(rendu, font);
     texteHautMoy(rendu, font);
     texteHautMin(rendu, font);
     texteNBcoupe(rendu, font);
-  
+
 
     bambou(rendu, font);
     SDL_RenderPresent(rendu);
 
-    if (jours == 0 ) {
-        affichage_panda(rendu, 810);
+    if (jours == 0) {
+        affichage_panda(rendu, 790);
     }
 }
 
@@ -406,7 +361,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
     jours++;
     affichage(rendu, font);
-    
+
 
     if (choix == 1) {
         affichage_panda(rendu, coPanda[maxiBambou]);
@@ -447,12 +402,12 @@ int main(int argn, char* argv[]) {
     init_croissance();
     coordonéesPanda();
 
-    menu(rendu, font);
-    
+    menu(rendu);
+
 
     int cpt = 0;
     bool continuer = true;
-   
+
 
     SDL_Event event;
     SDL_Event events;
@@ -460,7 +415,7 @@ int main(int argn, char* argv[]) {
     while (continuer) {
 
         SDL_WaitEvent(&event);
-        
+
         switch (event.type) {
 
         case SDL_QUIT:
@@ -476,14 +431,14 @@ int main(int argn, char* argv[]) {
                 for (int i = 0; i < nb_bambous; i++) {
                     tab[i].taille = 0;
                     jours = 0;
-                    tab[i].cpt = 0;      
+                    tab[i].cpt = 0;
                 }
                 affichage(rendu, font);
             }
             if (event.key.keysym.sym == SDLK_RSHIFT) {
 
                 boucle = true;
-                while (boucle == true){
+                while (boucle == true) {
                     SDL_PollEvent(&events);
                     SDL_Delay(600);
                     if (events.key.keysym.sym == SDLK_s) {
@@ -492,28 +447,36 @@ int main(int argn, char* argv[]) {
                     else {
                         croissance(rendu, font);
                     }
-             
+
                 }
-  
-               
+
+
             }
             break;
-       
+
         case SDL_MOUSEBUTTONUP://appui souris
             if (event.button.button == SDL_BUTTON_LEFT) {//si on clique bouton gauche
                 if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>380 && event.button.y < 380 + 82) {
-                    if (Menu == false) {
-
+                    
                         Menu = true;
                         affichage(rendu, font);
                         SDL_RenderPresent(rendu);
 
-                    }
+                    
                 }
-                else if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>537 && event.button.y < 537 + 82) {
+                if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>537 && event.button.y < 537 + 82) {
                     if (Menu == false) {
                         continuer = false;
                     }
+                }
+                if (event.button.x > 1054 && event.button.x < 1054 + 136 && event.button.y>167 && event.button.y < 167 + 48) {
+                    config(rendu);
+                }
+                if (event.button.x > 550 && event.button.x < 550 + 154 && event.button.y>48 && event.button.y < 93) {
+                    
+                    Menu = false;
+                    menu(rendu);
+
                 }
             }
             break;

@@ -22,10 +22,13 @@ const int HAUTEUR = 700;  //hauteur fenetre
 const int nb_bambous = 8;
 bool Menu = false;
 int jours = 0;
+int nbCoupe = 0;
 int maxi = 0;
 int maxiBambou = 0;
+int choixUser = 1;
 int choix = 1;
 bool boucle = false;
+int xpanda;
 
 struct bambous
 {
@@ -295,9 +298,6 @@ void bambou(SDL_Renderer* rendu, TTF_Font* font) {
     if (maxi != 0) {
         init_ligne_max(rendu, maxi + 11, font);
     }
-
-
-    SDL_RenderPresent(rendu);
 }
 
 void affichage(SDL_Renderer* rendu, TTF_Font* font) {
@@ -328,11 +328,13 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
 
     bambou(rendu, font);
-    SDL_RenderPresent(rendu);
+  
 
     if (jours == 0) {
         affichage_panda(rendu, 790);
+        xpanda = 8;
     }
+    SDL_RenderPresent(rendu);
 }
 
 void choix1() {
@@ -347,8 +349,18 @@ void choix1() {
 
         tab[maxiBambou].taille = 0;
         tab[maxiBambou].cpt = 0;
+        nbCoupe++;
     }
 }
+
+void choix0() {
+
+        tab[xpanda].taille = 0;
+        tab[xpanda].cpt = 0;
+        nbCoupe++;
+    
+}
+
 
 void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
@@ -360,13 +372,25 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     }
 
     jours++;
-    affichage(rendu, font);
+  
 
 
     if (choix == 1) {
-        affichage_panda(rendu, coPanda[maxiBambou]);
         choix1();
+        affichage(rendu, font);
+        affichage_panda(rendu, coPanda[maxiBambou]);
+        xpanda = maxiBambou;
+        
     }
+    else if (choix == 0) {
+       
+        choix0();
+        affichage(rendu, font);
+        affichage_panda(rendu, coPanda[xpanda]);
+  
+
+    }
+   
 }
 
 int main(int argn, char* argv[]) {
@@ -424,19 +448,24 @@ int main(int argn, char* argv[]) {
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_RETURN) {
 
+                choix = choixUser;
                 croissance(rendu, font);
             }
             if (event.key.keysym.sym == SDLK_r) {
 
+                choix = choixUser;
+
                 for (int i = 0; i < nb_bambous; i++) {
                     tab[i].taille = 0;
                     jours = 0;
+                    nbCoupe = 0;
                     tab[i].cpt = 0;
                 }
                 affichage(rendu, font);
             }
             if (event.key.keysym.sym == SDLK_RSHIFT) {
 
+                choix = choixUser;
                 boucle = true;
                 while (boucle == true) {
                     SDL_PollEvent(&events);
@@ -452,6 +481,54 @@ int main(int argn, char* argv[]) {
 
 
             }
+            if (event.key.keysym.sym == SDLK_LEFT) {
+                choix = 0;
+                if (jours == 0) {
+                    jours = 1;
+                }
+                affichage(rendu, font);
+                if (xpanda == 0) {
+                    
+                    affichage_panda(rendu, coPanda[7]);
+                    xpanda = 7;
+                    
+                }
+                else {
+                    affichage_panda(rendu, coPanda[xpanda-1]);
+                    xpanda = xpanda -1;
+                }
+
+                SDL_Delay(300);
+                
+               
+            }
+            if (event.key.keysym.sym == SDLK_RIGHT) {
+                choix = 0;
+                if (jours == 0) {
+                    jours = 1;
+                }
+                affichage(rendu, font);
+                if (xpanda == 7 || xpanda == 8) {
+
+                    affichage_panda(rendu, coPanda[0]);
+                    xpanda = 0;
+                }
+                else {
+                    affichage_panda(rendu, coPanda[xpanda + 1]);
+                    xpanda = xpanda + 1;
+                }
+                SDL_Delay(300);
+              
+
+
+            }
+
+            if (event.key.keysym.sym == SDLK_c) {
+
+                choix = 0;
+                croissance(rendu, font);
+            }
+
             break;
 
         case SDL_MOUSEBUTTONUP://appui souris

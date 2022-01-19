@@ -452,8 +452,8 @@ void maximum2(SDL_Point tab[], int taille) {
     int max = 0;
     int ind = 0;
     for (i = 0; i < taille; i = i + 1) {
-        if (max > tab[i].x) {
-            max = tab[i].x;
+        if (max > tab[i].y) {
+          
             max = tab[i].y;
             ind = i;
         }

@@ -45,6 +45,7 @@ int xpanda;
 int batterie = 100;
 int x = 300;
 int indGraph = 0;
+bool charging = false;
 
 
 
@@ -765,16 +766,9 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         if (tab[i].taille < minimum && tab[i].taille != 0) {
             minimum = tab[i].taille;
         }
-
         moyenne = tab[i].taille + moyenne;
-        cout << i << " " << tab[i].taille << endl;
     }
     moyenne = moyenne / nb_bambous;
-
-    cout << "min " << minimum << endl;
-    cout << "max " << maximum << endl;
-    cout << "moy " << moyenne << endl;
-    cout << endl;
     
     if (indGraph == 60) {
         indGraph = indGraph - 2;
@@ -815,6 +809,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[8]); 
             jauge(rendu, nbCoupe);
+            charging = true;
             while (batterie < 100) {
                 SDL_Delay(150);
                 batterie = batterie + 10;
@@ -826,6 +821,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         else {
             batterie = batterie - 5;
             choix1();
+            charging = false;
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[maxiBambou]);
             jauge(rendu, nbCoupe);
@@ -838,6 +834,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[8]);
             jauge(rendu, nbCoupe);
+            charging = true;
             while (batterie < 100) {
                 SDL_Delay(150);
                 batterie = batterie + 10;
@@ -851,6 +848,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             choix2(rendu, font);
             affichage(rendu, font);
             jauge(rendu, nbCoupe);
+            charging = false;
             if (xpanda == 9) {
                 affichage_panda(rendu, 790);
                
@@ -870,6 +868,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[8]);
             jauge(rendu, nbCoupe);
+            charging = true;
             while (batterie < 100) {
                 SDL_Delay(150);
                 batterie = batterie + 10;
@@ -882,6 +881,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
             choix3(rendu, font);
             affichage(rendu, font);
+            charging = false;
             jauge(rendu, nbCoupe);
             if (xpanda == 9) {
                 affichage_panda(rendu, 790);
@@ -892,6 +892,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
                 batterie = batterie - 5;
                 affichage_panda(rendu, coPanda[maxifastBambou]);
                 xpanda = maxifastBambou;
+                
 
             }
         }
@@ -900,6 +901,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     else if (choix == 0) {
         if (batterie == 0) {
             batterieOff = true;
+            charging = true;
         }
         else {
             batterie = batterie - 5;
@@ -907,7 +909,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[xpanda]);
             jauge(rendu, nbCoupe);
-            
+      
         }
     }
     else {
@@ -916,6 +918,16 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         jauge(rendu, nbCoupe);
 
     }
+
+    ofstream sortie("laptest.txt", ios::app);
+    sortie << "Jours : " << jours << endl;
+    sortie << "Hauteur Maximum : " << maximum << endl;
+    sortie << "Hauteur Moyenne : " << moyenne << endl;
+    sortie << "Hauteur Minimum : " << minimum << endl;
+    sortie << "En charge : " << (charging == true ? "Oui" : "Non") << endl;
+    sortie << "------------------------------" << endl;
+
+    sortie.close();
 
 }
 
@@ -1125,6 +1137,10 @@ int main(int argn, char* argv[]) {
 
     menu(rendu);
 
+    ofstream sortie("laptest.txt", ios::trunc);
+    sortie << "------------------------------" << endl;
+    sortie.close();
+
 
     int cpt = 0;
     bool continuer = true;
@@ -1193,9 +1209,12 @@ int main(int argn, char* argv[]) {
                     GameOver(rendu, font);
                 }
                 if (Apli == true && batterieOff == false) {
+                    bool diffJour = false;
+                    charging = false;
                     choix = 0;
                     if (jours == 0) {
                         jours = 1;
+                        diffJour = true;
                     }
                     affichage(rendu, font);
                     if (xpanda == 0) {
@@ -1208,11 +1227,17 @@ int main(int argn, char* argv[]) {
                         affichage_panda(rendu, coPanda[xpanda - 1]);
                         xpanda = xpanda - 1;
                     }
+                    if (diffJour == true) {
+                        jours--;
+                        diffJour = false;
+                    }
                     jauge(rendu, nbCoupe);
-                    SDL_Delay(300);
+                    SDL_Delay(200);
                 }
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {
+                charging = false;
+                bool diffJour = false;
                 if (batterie == 0) {
                     batterieOff = true;
                     GameOver(rendu, font);
@@ -1221,6 +1246,7 @@ int main(int argn, char* argv[]) {
                     choix = 0;
                     if (jours == 0) {
                         jours = 1;
+                        diffJour = true;
                     }
                     affichage(rendu, font);
                     if (xpanda == 7 || xpanda == 8) {
@@ -1232,8 +1258,12 @@ int main(int argn, char* argv[]) {
                         affichage_panda(rendu, coPanda[xpanda + 1]);
                         xpanda = xpanda + 1;
                     }
-                    jauge(rendu, nbCoupe);
-                    SDL_Delay(300);
+                    if (diffJour == true) {
+                        jours--;
+                        diffJour = false;
+                    }
+                    jauge(rendu, nbCoupe);   
+                    SDL_Delay(100);
                 }
 
 
@@ -1241,17 +1271,17 @@ int main(int argn, char* argv[]) {
             }
 
             if (event.key.keysym.sym == SDLK_DOWN) {
+                charging = true;
                 if (batterie == 0) {
                     batterieOff = true;
                     GameOver(rendu, font);
                 }
                 if (Apli == true && batterieOff == false) {
                     choix = 0;
-                    if (jours == 0) {
-                        jours = 1;
-                    }
-                    affichage(rendu, font);        
 
+                    croissance(rendu, font);
+                    
+                    affichage(rendu, font);        
                     affichage_panda(rendu, coPanda[8]);
                     xpanda = 8;
                     
@@ -1265,9 +1295,6 @@ int main(int argn, char* argv[]) {
                     batterie = 100;
                     jauge(rendu, nbCoupe);
                 }
-
-
-
             }
 
             if (event.key.keysym.sym == SDLK_c) {

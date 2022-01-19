@@ -599,16 +599,17 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     if (choix == 1) {
         if (batterie < 6) {
             affichage(rendu, font);
-            affichage_panda(rendu, coPanda[8]);
-            batterie = batterie - 5;
+            affichage_panda(rendu, coPanda[8]); 
             while (batterie < 100) {
                 SDL_Delay(150);
                 batterie = batterie + 10;
                 batterieAuto(rendu);
             }
+            batterie = 100;
 
         }
         else {
+            batterie = batterie - 5;
             choix1();
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[maxiBambou]);
@@ -767,6 +768,34 @@ int main(int argn, char* argv[]) {
                         xpanda = xpanda + 1;
                     }
                     SDL_Delay(300);
+                }
+
+
+
+            }
+
+            if (event.key.keysym.sym == SDLK_DOWN) {
+                if (batterie == 0) {
+                    batterieOff = true;
+                }
+                if (Apli == true && batterieOff == false) {
+                    choix = 0;
+                    if (jours == 0) {
+                        jours = 1;
+                    }
+                    affichage(rendu, font);        
+
+                    affichage_panda(rendu, coPanda[8]);
+                    xpanda = 8;
+                    
+                    SDL_Delay(300);
+
+                    while (batterie < 100) {
+                        SDL_Delay(150);
+                        batterie = batterie + 10;
+                        batterieAuto(rendu);
+                    }
+                    batterie = 100;
                 }
 
 

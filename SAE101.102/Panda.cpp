@@ -441,7 +441,7 @@ void batterieAuto(SDL_Renderer* rendu) {
     if (batterie <= 50 && batterie > 25) {
         batterie2barres(rendu);
     }
-    if (batterie <= 25 && batterie >= 1 ) {
+    if (batterie <= 25 && batterie >= 1) {
         batterie1barre(rendu);
     }
 }
@@ -501,19 +501,19 @@ void Graphique(SDL_Renderer* rendu) {
     SDL_RenderDrawPoints(rendu, points, 100);
     SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
     SDL_RenderDrawLines(rendu, points, 100);
-    SDL_RenderPresent(rendu); 
+    SDL_RenderPresent(rendu);
     moyenne(points, 100);
     SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
     SDL_RenderDrawPoints(rendu, points, 100);
     SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
     SDL_RenderDrawLines(rendu, points, 100);
-    SDL_RenderPresent(rendu); 
+    SDL_RenderPresent(rendu);
     minimum(points, 100);
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
     SDL_RenderDrawPoints(rendu, points, 100);
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
     SDL_RenderDrawLines(rendu, points, 100);
-    SDL_RenderPresent(rendu); 
+    SDL_RenderPresent(rendu);
 
 }
 
@@ -767,7 +767,7 @@ int main(int argn, char* argv[]) {
                     }
                     SDL_Delay(300);
                 }
-                
+
 
 
             }

@@ -144,6 +144,78 @@ void coordonéesPanda() {
     }
 }
 
+void textjours(SDL_Renderer* rendu, TTF_Font* font) {
+
+    SDL_Color blanche = { 0,0,0 }; //on définit une couleur de texte
+
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+    positionTexte.x = LARGEUR_TOTALE - 430;
+    positionTexte.y = 20;
+    //on place le texte au point (100,100)
+    char score_text[500];
+
+    ofstream sortie("option.txt", ios::trunc);
+    sortie << "Jours : " << jours << endl;
+    sortie.close();
+    
+    ifstream entrer("option.txt", ios::in);
+    entrer.getline(score_text, 500);
+      
+    entrer.close();
+
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, score_text, blanche);
+    SDL_Texture* text = SDL_CreateTextureFromSurface(rendu, textSurface);
+    //on maj le rectangle couvrant cette texture
+
+    SDL_QueryTexture(text, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 1.5;
+    positionTexte.h *= 1.5;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, text, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(text);
+}
+
+void textcoupe(SDL_Renderer* rendu, TTF_Font* font) {
+
+    SDL_Color blanche = { 0,0,255 }; //on définit une couleur de texte
+
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+    positionTexte.x = LARGEUR_TOTALE - 185;
+    positionTexte.y = 300;
+    //on place le texte au point (100,100)
+    char score_text[500];
+
+    ofstream sortie("option.txt2", ios::trunc);
+    sortie << "Nb Coupe : " << nbCoupe << endl;
+    sortie.close();
+
+    ifstream entrer("option.txt2", ios::in);
+    entrer.getline(score_text, 500);
+
+    entrer.close();
+
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, score_text, blanche);
+    SDL_Texture* text = SDL_CreateTextureFromSurface(rendu, textSurface);
+    //on maj le rectangle couvrant cette texture
+
+    SDL_QueryTexture(text, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 1;
+    positionTexte.h *= 1;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, text, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(text);
+}
+
 void texteLégende(SDL_Renderer* rendu, TTF_Font* font) {
 
     SDL_Color blanche = { 255,255,255 }; //on définit une couleur de texte
@@ -221,28 +293,6 @@ void texteHautMin(SDL_Renderer* rendu, TTF_Font* font) {
     positionTexte.y = 250;
     //on crée une texture à partir du texte, de sa couleur, et de la fonte
     SDL_Texture* texture = loadText(rendu, "Haut min", rouge, font);
-    //on maj le rectangle couvrant cette texture
-    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
-    //si on veut modifier le cadre du texte
-    positionTexte.w *= 0.8;
-    positionTexte.h *= 0.8;
-    //on copie la texture dans le rendu
-    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
-    //on met à jour le rendu
-    SDL_RenderPresent(rendu);
-    //on détruit la texture
-    SDL_DestroyTexture(texture);
-}
-
-void texteNBcoupe(SDL_Renderer* rendu, TTF_Font* font) {
-    SDL_Color bleu = { 0,0,255 }; //on définit une couleur de texte
-    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
-
-    //on place le texte au point (100,100)
-    positionTexte.x = LARGEUR_TOTALE - 185;
-    positionTexte.y = 300;
-    //on crée une texture à partir du texte, de sa couleur, et de la fonte
-    SDL_Texture* texture = loadText(rendu, "nombre de coupe", bleu, font);
     //on maj le rectangle couvrant cette texture
     SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
     //si on veut modifier le cadre du texte
@@ -603,7 +653,8 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     texteHautMax(rendu, font);
     texteHautMoy(rendu, font);
     texteHautMin(rendu, font);
-    texteNBcoupe(rendu, font);
+    textjours(rendu, font);
+    textcoupe(rendu, font);
 
     SDL_DestroyTexture(pTextureImagefond);
 
@@ -697,11 +748,12 @@ void choix3(SDL_Renderer* rendu, TTF_Font* font) {
         
     }
 }
+
 void jauge(SDL_Renderer* rendu, int x) {
     SDL_Rect jauge;
     jauge.x = LARGEUR - 9;
     jauge.w = 10;
-    jauge.h = 10 * x;
+    jauge.h = 5 * x;
     jauge.y = HAUTEUR - jauge.h;
     SDL_SetRenderDrawColor(rendu, 0, 0, 255, 255);
     SDL_RenderFillRect(rendu, &jauge);
@@ -775,25 +827,25 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
 
         for (int i = 2; i < 60; i++) {
-            points[i - 2].x = (i - 2) * 3 + 1002;
+            points[i - 2].x = (i - 2) * 3 + 1005;
             points[i - 2].y = points[i].y;
 
-            pointsmin[i - 2].x = (i - 2) * 3 + 1000;
+            pointsmin[i - 2].x = (i - 2) * 3 + 1005;
             pointsmin[i - 2].y = pointsmin[i].y;
 
-            pointsmax[i - 2].x = (i - 2) * 3 + 1000;
+            pointsmax[i - 2].x = (i - 2) * 3 + 1005;
             pointsmax[i - 2].y = pointsmax[i].y;
         }
     }
 
-    points[indGraph].x = indGraph * 3 + 1002;
+    points[indGraph].x = indGraph * 3 + 1005;
     points[indGraph].y =HAUTEUR - (moyenne % 100) - 150;
 
 
-    pointsmax[indGraph].x = indGraph * 3 + 1000;
+    pointsmax[indGraph].x = indGraph * 3 + 1005;
     pointsmax[indGraph].y = HAUTEUR - (maximum % 100) - 250;
 
-    pointsmin[indGraph].x = indGraph * 3 + 1000;
+    pointsmin[indGraph].x = indGraph * 3 + 1005;
     pointsmin[indGraph].y = HAUTEUR - (minimum % 100) - 50;
 
  

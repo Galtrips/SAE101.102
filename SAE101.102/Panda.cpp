@@ -26,6 +26,8 @@ bool Pause = false;
 bool Config = false;
 bool Apli = false;
 
+bool batterieOff = false;
+
 int jours = 0;
 int nbCoupe = 0;
 int maxi = 0;
@@ -34,6 +36,7 @@ int choixUser = 1;
 int choix = 1;
 bool boucle = false;
 int xpanda;
+int batterie = 100;
 
 struct bambous
 {
@@ -322,6 +325,199 @@ void bambou(SDL_Renderer* rendu, TTF_Font* font) {
     }
 }
 
+void batteriePleine(SDL_Renderer* rendu) {
+
+    SDL_Rect rect1;
+    rect1.x = 874;
+    rect1.w = 10;
+    rect1.h = 20;
+    rect1.y = 80;
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+    SDL_RenderFillRect(rendu, &rect1);
+
+
+    SDL_Rect rect2;
+    rect2.x = 886;
+    rect2.w = 10;
+    rect2.h = 20;
+    rect2.y = 80;
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 50);
+    SDL_RenderFillRect(rendu, &rect2);
+
+    SDL_Rect rect3;
+    rect3.x = 898;
+    rect3.w = 10;
+    rect3.h = 20;
+    rect3.y = 80;
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 50);
+    SDL_RenderFillRect(rendu, &rect3);
+
+    SDL_Rect rect4;
+    rect4.x = 910;
+    rect4.w = 10;
+    rect4.h = 20;
+    rect4.y = 80;
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 50);
+    SDL_RenderFillRect(rendu, &rect4);
+
+    SDL_RenderPresent(rendu);
+}
+
+void batterie3barres(SDL_Renderer* rendu) {
+
+    SDL_Rect rect1;
+    rect1.x = 874;
+    rect1.w = 10;
+    rect1.h = 20;
+    rect1.y = 80;
+    SDL_SetRenderDrawColor(rendu, 255, 255, 0, 0);
+    SDL_RenderFillRect(rendu, &rect1);
+
+
+    SDL_Rect rect2;
+    rect2.x = 886;
+    rect2.w = 10;
+    rect2.h = 20;
+    rect2.y = 80;
+    SDL_SetRenderDrawColor(rendu, 255, 255, 0, 0);
+    SDL_RenderFillRect(rendu, &rect2);
+
+    SDL_Rect rect3;
+    rect3.x = 898;
+    rect3.w = 10;
+    rect3.h = 20;
+    rect3.y = 80;
+    SDL_SetRenderDrawColor(rendu, 255, 255, 0, 0);
+    SDL_RenderFillRect(rendu, &rect3);
+
+
+    SDL_RenderPresent(rendu);
+}
+
+void batterie2barres(SDL_Renderer* rendu) {
+
+    SDL_Rect rect1;
+    rect1.x = 874;
+    rect1.w = 10;
+    rect1.h = 20;
+    rect1.y = 80;
+    SDL_SetRenderDrawColor(rendu, 255, 127, 0, 0);
+    SDL_RenderFillRect(rendu, &rect1);
+
+
+    SDL_Rect rect2;
+    rect2.x = 886;
+    rect2.w = 10;
+    rect2.h = 20;
+    rect2.y = 80;
+    SDL_SetRenderDrawColor(rendu, 255, 127, 0, 0);
+    SDL_RenderFillRect(rendu, &rect2);
+
+
+    SDL_RenderPresent(rendu);
+}
+
+void batterie1barre(SDL_Renderer* rendu) {
+
+    SDL_Rect rect1;
+    rect1.x = 874;
+    rect1.w = 10;
+    rect1.h = 20;
+    rect1.y = 80;
+    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
+    SDL_RenderFillRect(rendu, &rect1);
+
+    SDL_RenderPresent(rendu);
+}
+
+void batterieAuto(SDL_Renderer* rendu) {
+    batterie = batterie - 5;
+    if (batterie > 75) {
+        batteriePleine(rendu);
+    }
+    if (batterie <= 75 && batterie > 50) {
+        batterie3barres(rendu);
+    }
+    if (batterie <= 50 && batterie > 25) {
+        batterie2barres(rendu);
+    }
+    if (batterie <= 25 && batterie >= 1 ) {
+        batterie1barre(rendu);
+    }
+}
+
+void maximum2(SDL_Point tab[], int taille) {
+
+    int i;
+    int max = 0;
+    int ind = 0;
+    for (i = 0; i < taille; i = i + 1) {
+        if (max > tab[i].x) {
+            max = tab[i].x;
+            max = tab[i].y;
+            ind = i;
+        }
+        tab[i].x = i * 30 + 1000;
+        tab[i].y = rand() % 100 + 400;
+    }
+}
+
+void minimum(SDL_Point tab[], int taille) {
+
+    int i;
+    int min = 0;
+    int ind = 0;
+    for (i = 0; i < taille; i = i + 1) {
+        if (min > tab[i].x) {
+            min = tab[i].x;
+            min = tab[i].y;
+            ind = i;
+        }
+        tab[i].x = i * 30 + 1000;
+        tab[i].y = rand() % 100 + 600;
+    }
+}
+
+void moyenne(SDL_Point tab[], int taille) {
+
+    int i;
+    int som = 0;
+    int moy = 0;
+
+    for (i = 0; i < taille; i++) {
+
+        som = som + tab[i].x;
+        moy = som / taille;
+        tab[i].x = i * 3 + 1000;
+        tab[i].y = rand() % 100 + 500;
+    }
+}
+
+void Graphique(SDL_Renderer* rendu) {
+
+    SDL_Point points[100];
+    maximum2(points, 100);
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+    SDL_RenderDrawPoints(rendu, points, 100);
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+    SDL_RenderDrawLines(rendu, points, 100);
+    SDL_RenderPresent(rendu); 
+    moyenne(points, 100);
+    SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
+    SDL_RenderDrawPoints(rendu, points, 100);
+    SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
+    SDL_RenderDrawLines(rendu, points, 100);
+    SDL_RenderPresent(rendu); 
+    minimum(points, 100);
+    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
+    SDL_RenderDrawPoints(rendu, points, 100);
+    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
+    SDL_RenderDrawLines(rendu, points, 100);
+    SDL_RenderPresent(rendu); 
+
+}
+
+
 void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
     SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
@@ -348,6 +544,7 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     texteHautMin(rendu, font);
     texteNBcoupe(rendu, font);
 
+    Graphique(rendu);
 
     bambou(rendu, font);
 
@@ -356,7 +553,9 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
         affichage_panda(rendu, 790);
         xpanda = 8;
     }
+    batterieAuto(rendu);
     SDL_RenderPresent(rendu);
+
 }
 
 void choix1() {
@@ -398,19 +597,34 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
 
     if (choix == 1) {
-        choix1();
-        affichage(rendu, font);
-        affichage_panda(rendu, coPanda[maxiBambou]);
-        xpanda = maxiBambou;
+        if (batterie < 2) {
+            affichage(rendu, font);
+            affichage_panda(rendu, coPanda[8]);
+
+            while (batterie < 100) {
+                SDL_Delay(150);
+                batterie = batterie + 10;
+                batterieAuto(rendu);
+            }
+
+        }
+        else {
+            choix1();
+            affichage(rendu, font);
+            affichage_panda(rendu, coPanda[maxiBambou]);
+            xpanda = maxiBambou;
+        }
 
     }
     else if (choix == 0) {
-
-        choix0();
-        affichage(rendu, font);
-        affichage_panda(rendu, coPanda[xpanda]);
-
-
+        if (batterie == 0) {
+            batterieOff = true;
+        }
+        else {
+            choix0();
+            affichage(rendu, font);
+            affichage_panda(rendu, coPanda[xpanda]);
+        }
     }
 
 }
@@ -468,7 +682,7 @@ int main(int argn, char* argv[]) {
             continuer = false;
             break;
         case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_RETURN) {
+            if (event.key.keysym.sym == SDLK_RETURN && batterieOff == false) {
                 if (Apli == true) {
                     choix = choixUser;
                     croissance(rendu, font);
@@ -483,11 +697,13 @@ int main(int argn, char* argv[]) {
                         jours = 0;
                         nbCoupe = 0;
                         tab[i].cpt = 0;
+                        batterie = 100;
+                        batterieOff = false;
                     }
                     affichage(rendu, font);
                 }
             }
-            if (event.key.keysym.sym == SDLK_RSHIFT) {
+            if (event.key.keysym.sym == SDLK_RSHIFT && batterieOff == false) {
                 if (Apli == true) {
                     choix = choixUser;
                     boucle = true;
@@ -507,7 +723,10 @@ int main(int argn, char* argv[]) {
 
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
-                if (Apli == true) {
+                if (batterie == 0) {
+                    batterieOff = true;
+                }
+                if (Apli == true && batterieOff == false) {
                     choix = 0;
                     if (jours == 0) {
                         jours = 1;
@@ -526,11 +745,12 @@ int main(int argn, char* argv[]) {
 
                     SDL_Delay(300);
                 }
-
-
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {
-                if (Apli == true) {
+                if (batterie == 0) {
+                    batterieOff = true;
+                }
+                if (Apli == true && batterieOff == false) {
                     choix = 0;
                     if (jours == 0) {
                         jours = 1;
@@ -547,12 +767,16 @@ int main(int argn, char* argv[]) {
                     }
                     SDL_Delay(300);
                 }
+                
 
 
             }
 
             if (event.key.keysym.sym == SDLK_c) {
-                if (Apli == true) {
+                if (batterie == 0) {
+                    batterieOff = true;
+                }
+                if (Apli == true && batterieOff == false) {
                     choix = 0;
                     croissance(rendu, font);
                 }

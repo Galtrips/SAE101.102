@@ -58,6 +58,9 @@ struct bambous
 
 bambous tab[8];
 int coPanda[9];
+int tabymoy[100];
+int tabymax[100];
+int tabymin[100];
 
 void logo(SDL_Window* win) {
 
@@ -739,7 +742,7 @@ void GameOver(SDL_Renderer* rendu, TTF_Font* font) {
 
 void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
-    int minimum = tab[0].taille;
+    int minimum = 0;
     int maximum = 0;
     int moyenne = 0;
 
@@ -749,23 +752,49 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             tab[i - 1].cpt++;
         }
     }
+
     jours++;
+
+    minimum = tab[0].taille;
 
     for (int i = 0; i < nb_bambous; i++) {
         
         if (tab[i].taille > maximum) {
             maximum = tab[i].taille;
         }
-        if (tab[i].taille < minimum) {
+        if (tab[i].taille < minimum && tab[i].taille != 0) {
             minimum = tab[i].taille;
         }
 
         moyenne = tab[i].taille + moyenne;
-        moyenne = moyenne / nb_bambous;
+        cout << i << " " << tab[i].taille << endl;
     }
+    moyenne = moyenne / nb_bambous;
+
+    cout << "min " << minimum << endl;
+    cout << "max " << maximum << endl;
+    cout << "moy " << moyenne << endl;
+    cout << endl;
     
-    points[indGraph].x = indGraph * 3 + 1000;
+    if (indGraph == 60) {
+        indGraph = indGraph - 2;
+
+
+        for (int i = 2; i < 60; i++) {
+            points[i - 2].x = (i - 2) * 3 + 1002;
+            points[i - 2].y = points[i].y;
+
+            pointsmin[i - 2].x = (i - 2) * 3 + 1000;
+            pointsmin[i - 2].y = pointsmin[i].y;
+
+            pointsmax[i - 2].x = (i - 2) * 3 + 1000;
+            pointsmax[i - 2].y = pointsmax[i].y;
+        }
+    }
+
+    points[indGraph].x = indGraph * 3 + 1002;
     points[indGraph].y =HAUTEUR - (moyenne % 100) - 150;
+
 
     pointsmax[indGraph].x = indGraph * 3 + 1000;
     pointsmax[indGraph].y = HAUTEUR - (maximum % 100) - 250;
@@ -773,14 +802,11 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     pointsmin[indGraph].x = indGraph * 3 + 1000;
     pointsmin[indGraph].y = HAUTEUR - (minimum % 100) - 50;
 
-   
+ 
 
     indGraph++;
 
-    if (indGraph == 100) {
-        indGraph = 0;
-        init_point();
-    }
+    
     
     
 

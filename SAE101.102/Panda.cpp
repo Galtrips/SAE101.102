@@ -47,6 +47,7 @@ int x = 300;
 int indGraph = 0;
 
 
+
 struct bambous
 {
     int taille = 0;
@@ -517,6 +518,16 @@ void minCourbe(SDL_Renderer* rendu) {
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
     //SDL_RenderDrawLines(rendu, pointsmin, 100);
 
+}
+
+void save() {
+    ofstream sortie("save.txt", ios::out);
+    sortie << nb_bambous << ";";
+    for (int i = 0; i < 8; i++) {
+        sortie << tab[i].croissance << ";";
+    }
+    sortie << choixUser << ";";
+    sortie.close();
 }
 
 void son(SDL_Renderer* rendu) {
@@ -1244,6 +1255,11 @@ int main(int argn, char* argv[]) {
                     if (Menu == true) {
                         Menu = false;
                         continuer = false;
+                    }
+                }
+                if (event.button.x > 725 && event.button.x < 1209 && event.button.y>630 && event.button.y < 675) {
+                    if (Config == true) {
+                        save();
                     }
                 }
                 //Bouton config menu

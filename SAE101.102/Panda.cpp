@@ -15,7 +15,8 @@ SDL_Rect title;
 SDL_Surface* image;
 SDL_Texture* pTextureImage;
 SDL_Point points[100];
-
+SDL_Point pointsmax[100];
+SDL_Point pointsmin[100];
 
 
 const int LARGEUR = 1000; //largeur fenetre
@@ -488,33 +489,33 @@ void batterieAuto(SDL_Renderer* rendu) {
 
 
 
-void Graphique(SDL_Renderer* rendu) {
 
- 
-    SDL_SetRenderDrawColor(rendu, 0, 0, 255, 0);
-    SDL_RenderDrawPoints(rendu, points, 100);
-    SDL_SetRenderDrawColor(rendu, 0, 0, 255, 0);
-    SDL_RenderDrawLines(rendu, points, 100);
-    SDL_RenderPresent(rendu);
-
-    
-
-   
-    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
-    SDL_RenderDrawPoints(rendu, points, 100);
-    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
-    SDL_RenderDrawLines(rendu, points, 100);
-    SDL_RenderPresent(rendu);
-
-}
 
 void moyenneCourbe(SDL_Renderer* rendu) {
 
-    SDL_SetRenderDrawColor(rendu, 127, 255, 255, 0);
+    SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
     SDL_RenderDrawPoints(rendu, points, 100);
     SDL_SetRenderDrawColor(rendu, 127, 255, 255, 0);
     //SDL_RenderDrawLines(rendu, points, 100);
   
+}
+
+void maxCourbe(SDL_Renderer* rendu) {
+
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+    SDL_RenderDrawPoints(rendu, pointsmax, 100);
+    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+    //SDL_RenderDrawLines(rendu, pointsmax, 100);
+
+}
+
+void minCourbe(SDL_Renderer* rendu) {
+
+    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
+    SDL_RenderDrawPoints(rendu, pointsmin, 100);
+    SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
+    //SDL_RenderDrawLines(rendu, pointsmin, 100);
+
 }
 
 void affichage(SDL_Renderer* rendu, TTF_Font* font) {
@@ -549,6 +550,8 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
     bambou(rendu, font);
     moyenneCourbe(rendu);
+    minCourbe(rendu);
+    maxCourbe(rendu);
 
     if (choix == 2 || choix == 3) {
         init_ligne_coupe(rendu, x, font);
@@ -704,7 +707,14 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     }
     
     points[indGraph].x = indGraph * 3 + 1000;
-    points[indGraph].y =HAUTEUR - (moyenne % 100) - 300;
+    points[indGraph].y =HAUTEUR - (moyenne % 100) - 150;
+
+    pointsmax[indGraph].x = indGraph * 3 + 1000;
+    pointsmax[indGraph].y = HAUTEUR - (maximum % 100) - 250;
+
+    pointsmin[indGraph].x = indGraph * 3 + 1000;
+    pointsmin[indGraph].y = HAUTEUR - (minimum % 100) - 50;
+
     indGraph++;
 
     

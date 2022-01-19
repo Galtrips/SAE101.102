@@ -14,6 +14,8 @@ SDL_Rect bam2;
 SDL_Rect title;
 SDL_Surface* image;
 SDL_Texture* pTextureImage;
+SDL_Point points[100];
+
 
 
 const int LARGEUR = 1000; //largeur fenetre
@@ -40,6 +42,8 @@ bool boucle = false;
 int xpanda;
 int batterie = 100;
 int x = 300;
+int indGraph = 0;
+
 
 struct bambous
 {
@@ -61,6 +65,13 @@ void logo(SDL_Window* win) {
 
     }
     SDL_SetWindowIcon(win, icon);
+}
+
+void init_point() {
+    for (int i = 0; i < 100; i++) {
+        points[i].x = NULL;
+        points[i].y = NULL;
+    }
 }
 
 void menu(SDL_Renderer* rendu) {
@@ -475,69 +486,20 @@ void batterieAuto(SDL_Renderer* rendu) {
     }
 }
 
-void maximum2(SDL_Point tab[], int taille) {
 
-    int i;
-    int max = 0;
-    int ind = 0;
-    for (i = 0; i < taille; i = i + 1) {
-        if (max > tab[i].y) {
-          
-            max = tab[i].y;
-            ind = i;
-        }
-        tab[i].x = i * 30 + 1000;
-        tab[i].y = rand() % 100 + 400;
-    }
-}
-
-void minimum(SDL_Point tab[], int taille) {
-
-    int i;
-    int min = 0;
-    int ind = 0;
-    for (i = 0; i < taille; i = i + 1) {
-        if (min > tab[i].x) {
-            min = tab[i].x;
-            min = tab[i].y;
-            ind = i;
-        }
-        tab[i].x = i * 30 + 1000;
-        tab[i].y = rand() % 100 + 600;
-    }
-}
-
-void moyenne(SDL_Point tab[], int taille) {
-
-    int i;
-    int som = 0;
-    int moy = 0;
-
-    for (i = 0; i < taille; i++) {
-
-        som = som + tab[i].x;
-        moy = som / taille;
-        tab[i].x = i * 3 + 1000;
-        tab[i].y = rand() % 100 + 500;
-    }
-}
 
 void Graphique(SDL_Renderer* rendu) {
 
-    SDL_Point points[100];
-    maximum2(points, 100);
-    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+ 
+    SDL_SetRenderDrawColor(rendu, 0, 0, 255, 0);
     SDL_RenderDrawPoints(rendu, points, 100);
-    SDL_SetRenderDrawColor(rendu, 58, 157, 35, 0);
+    SDL_SetRenderDrawColor(rendu, 0, 0, 255, 0);
     SDL_RenderDrawLines(rendu, points, 100);
     SDL_RenderPresent(rendu);
-    moyenne(points, 100);
-    SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
-    SDL_RenderDrawPoints(rendu, points, 100);
-    SDL_SetRenderDrawColor(rendu, 127, 0, 255, 0);
-    SDL_RenderDrawLines(rendu, points, 100);
-    SDL_RenderPresent(rendu);
-    minimum(points, 100);
+
+    
+
+   
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
     SDL_RenderDrawPoints(rendu, points, 100);
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 0);
@@ -546,6 +508,14 @@ void Graphique(SDL_Renderer* rendu) {
 
 }
 
+void moyenneCourbe(SDL_Renderer* rendu) {
+
+    SDL_SetRenderDrawColor(rendu, 127, 255, 255, 0);
+    SDL_RenderDrawPoints(rendu, points, 100);
+    SDL_SetRenderDrawColor(rendu, 127, 255, 255, 0);
+    //SDL_RenderDrawLines(rendu, points, 100);
+  
+}
 
 void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
@@ -575,9 +545,10 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
     SDL_DestroyTexture(pTextureImagefond);
 
-    Graphique(rendu);
+    
 
     bambou(rendu, font);
+    moyenneCourbe(rendu);
 
     if (choix == 2 || choix == 3) {
         init_ligne_coupe(rendu, x, font);
@@ -707,16 +678,37 @@ void GameOver(SDL_Renderer* rendu, TTF_Font* font) {
 
 void croissance(SDL_Renderer* rendu, TTF_Font* font) {
 
+    int minimum = tab[0].taille;
+    int maximum = 0;
+    int moyenne = 0;
+
     for (int i = 1; i <= nb_bambous; i++) {
         if (tab[i - 1].taille + ((tab[i - 1].croissance * 6) + 5) < HAUTEUR - (65 * 2)) {
             tab[i - 1].taille = (tab[i - 1].taille) + ((tab[i - 1].croissance * 6) + 5);
             tab[i - 1].cpt++;
         }
     }
-
     jours++;
 
+    for (int i = 0; i < nb_bambous; i++) {
+        
+        if (tab[i].taille > maximum) {
+            maximum = tab[i].taille;
+        }
+        if (tab[i].taille < minimum) {
+            minimum = tab[i].taille;
+        }
 
+        moyenne = tab[i].taille + moyenne;
+        moyenne = moyenne / nb_bambous;
+    }
+    
+    points[indGraph].x = indGraph * 3 + 1000;
+    points[indGraph].y =HAUTEUR - (moyenne % 100) - 300;
+    indGraph++;
+
+    
+    
 
     if (choix == 1) {
         if (batterie < 6) {
@@ -1003,6 +995,7 @@ int main(int argn, char* argv[]) {
 
     logo(win);
     init_croissance();
+    init_point();
     coordonéesPanda();
 
     menu(rendu);
@@ -1420,39 +1413,39 @@ int main(int argn, char* argv[]) {
                         while (temp1 == true) {
                             SDL_PollEvent(&events);
                             if (events.key.keysym.sym == SDLK_1) {
-                                affiche1(rendu, underline.x + 3, font, 0);
+                                affiche1(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_2) {
-                                affiche2(rendu, underline.x + 3, font, 0);
+                                affiche2(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_3) {
-                                affiche3(rendu, underline.x + 3, font, 0);
+                                affiche3(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_4) {
-                                affiche4(rendu, underline.x + 3, font, 0);
+                                affiche4(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_5) {
-                                affiche5(rendu, underline.x + 3, font, 0);
+                                affiche5(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_6) {
-                                affiche6(rendu, underline.x + 3, font, 0);
+                                affiche6(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_7) {
-                                affiche7(rendu, underline.x + 3, font, 0);
+                                affiche7(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_8) {
-                                affiche8(rendu, underline.x + 3, font, 0);
+                                affiche8(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                             if (events.key.keysym.sym == SDLK_9) {
-                                affiche9(rendu, underline.x + 3, font, 0);
+                                affiche9(rendu, underline.x + 3, font, 1);
                                 temp1 = false;
                             }
                         }
@@ -1476,39 +1469,39 @@ int main(int argn, char* argv[]) {
                         while (temp2 == true) {
                             SDL_PollEvent(&events);
                             if (events.key.keysym.sym == SDLK_1) {
-                                affiche1(rendu, underline.x + 3, font, 1);
+                                affiche1(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_2) {
-                                affiche2(rendu, underline.x + 3, font, 1);
+                                affiche2(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_3) {
-                                affiche3(rendu, underline.x + 3, font, 1);
+                                affiche3(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_4) {
-                                affiche4(rendu, underline.x + 3, font, 1);
+                                affiche4(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_5) {
-                                affiche5(rendu, underline.x + 3, font, 1);
+                                affiche5(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_6) {
-                                affiche6(rendu, underline.x + 3, font, 1);
+                                affiche6(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_7) {
-                                affiche7(rendu, underline.x + 3, font, 1);
+                                affiche7(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_8) {
-                                affiche8(rendu, underline.x + 3, font, 1);
+                                affiche8(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                             if (events.key.keysym.sym == SDLK_9) {
-                                affiche9(rendu, underline.x + 3, font, 1);
+                                affiche9(rendu, underline.x + 3, font, 2);
                                 temp2 = false;
                             }
                         }

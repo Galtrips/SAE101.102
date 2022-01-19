@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include "config_sdl.h"
 #include <iostream>
 #include <fstream>
@@ -518,6 +519,32 @@ void minCourbe(SDL_Renderer* rendu) {
 
 }
 
+void son(SDL_Renderer* rendu) {
+    // on importe une image de son
+    SDL_Surface* son = IMG_Load("son.png");
+    SDL_Texture* pTextureImageson = SDL_CreateTextureFromSurface(rendu, son);
+    SDL_FreeSurface(son);
+    SDL_Rect src3{ 0, 0, 0, 0 };
+    SDL_Rect dst3{ 874,  120,50 , 50 };
+    SDL_QueryTexture(pTextureImageson, nullptr, nullptr, &src3.w, &src3.h);
+    SDL_RenderCopy(rendu, pTextureImageson, &src3, &dst3);
+    SDL_RenderPresent(rendu);
+
+}
+void sonOff(SDL_Renderer* rendu) {
+    // on importe une image de son
+    SDL_Surface* son = IMG_Load("sonOff.png");
+    SDL_Texture* pTextureImageson = SDL_CreateTextureFromSurface(rendu, son);
+    SDL_FreeSurface(son);
+    SDL_Rect src3{ 0, 0, 0, 0 };
+    SDL_Rect dst3{ 874,  120,80 , 50 };
+    SDL_QueryTexture(pTextureImageson, nullptr, nullptr, &src3.w, &src3.h);
+    SDL_RenderCopy(rendu, pTextureImageson, &src3, &dst3);
+    SDL_RenderPresent(rendu);
+
+}
+
+
 void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
     SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255);
@@ -552,6 +579,7 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     moyenneCourbe(rendu);
     minCourbe(rendu);
     maxCourbe(rendu);
+    son(rendu);
 
     if (choix == 2 || choix == 3) {
         init_ligne_coupe(rendu, x, font);
@@ -1002,6 +1030,31 @@ int main(int argn, char* argv[]) {
 
     TTF_Init();
     TTF_Font* font = TTF_OpenFont("C:\\Windows\\Fonts\\calibri.ttf", 25);
+
+
+    //la musique
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        return -1;
+    // Initialisation de SDL_Mixer
+    if (Mix_OpenAudio(96000, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) < 0)
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Erreur initialisation SDL_mixer : %s", Mix_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
+    Mix_Music* music = Mix_LoadMUS("musique1.mp3"); // Charge notre musique
+
+    if (music == nullptr)
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Erreur chargement de la musique : %s", Mix_GetError());
+        Mix_CloseAudio();
+        SDL_Quit();
+        return -1;
+    }
+    Mix_PlayMusic(music, -1); // Joue notre musique 
+
 
     logo(win);
     init_croissance();

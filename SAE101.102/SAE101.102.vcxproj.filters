@@ -26,6 +26,9 @@
     <ClInclude Include="config_sdl.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="SDL_mixer.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

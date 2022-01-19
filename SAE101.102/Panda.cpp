@@ -38,7 +38,7 @@ int choix = choixUser;
 bool boucle = false;
 int xpanda;
 int batterie = 100;
-int   x = 350;
+int x = 300;
 
 struct bambous
 {
@@ -266,13 +266,13 @@ void init_croissance() {
 void init_ligne_max(SDL_Renderer* rendu, int taille, TTF_Font* font) {
 
     SDL_SetRenderDrawColor(rendu, 255, 0, 0, 255);
-    SDL_RenderDrawLine(rendu, 0, HAUTEUR - taille, LARGEUR, HAUTEUR - taille);
+    SDL_RenderDrawLine(rendu, 0, HAUTEUR - taille, LARGEUR-11, HAUTEUR - taille);
 
     SDL_Color rouge = { 255,0,0 }; //on définit une couleur de texte
     SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
 
     //on place le texte au point (100,100)
-    positionTexte.x = LARGEUR - 28;
+    positionTexte.x = LARGEUR - 28-11;
     positionTexte.y = HAUTEUR - taille - 15;
 
     SDL_Texture* texture = loadText(rendu, "Max", rouge, font);
@@ -292,13 +292,13 @@ void init_ligne_max(SDL_Renderer* rendu, int taille, TTF_Font* font) {
 void init_ligne_coupe(SDL_Renderer* rendu, int taille, TTF_Font* font) {
 
     SDL_SetRenderDrawColor(rendu, 156, 100, 55, 255);
-    SDL_RenderDrawLine(rendu, 0, HAUTEUR - taille, LARGEUR, HAUTEUR - taille);
+    SDL_RenderDrawLine(rendu, 0, HAUTEUR - taille, LARGEUR-11, HAUTEUR - taille);
 
     SDL_Color rouge = { 156, 100, 55 }; //on définit une couleur de texte
     SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
 
     //on place le texte au point (100,100)
-    positionTexte.x = LARGEUR - 32;
+    positionTexte.x = LARGEUR - 32-20;
     positionTexte.y = HAUTEUR - taille - 15;
 
     SDL_Texture* texture = loadText(rendu, "Coupe", rouge, font);

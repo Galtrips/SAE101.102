@@ -20,7 +20,12 @@ const int LARGEUR = 1000; //largeur fenetre
 const int LARGEUR_TOTALE = 1250;//largeur fenetre
 const int HAUTEUR = 700;  //hauteur fenetre
 int nb_bambous = 8;
+
 bool Menu = true;
+bool Pause = false;
+bool Config = false;
+bool Apli = false;
+
 int jours = 0;
 int nbCoupe = 0;
 int maxi = 0;
@@ -105,7 +110,7 @@ void coordonéesPanda() {
             coPanda[i - 1] = 80 * i + 10;
         }
         else {
-            coPanda[i - 1] = LARGEUR - 70;
+            coPanda[i - 1] = LARGEUR - 95;
         }
     }
 }
@@ -345,7 +350,7 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
 
     bambou(rendu, font);
-  
+
 
     if (jours == 0) {
         affichage_panda(rendu, 790);
@@ -372,10 +377,10 @@ void choix1() {
 
 void choix0() {
 
-        tab[xpanda].taille = 0;
-        tab[xpanda].cpt = 0;
-        nbCoupe++;
-    
+    tab[xpanda].taille = 0;
+    tab[xpanda].cpt = 0;
+    nbCoupe++;
+
 }
 
 
@@ -389,7 +394,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     }
 
     jours++;
-  
+
 
 
     if (choix == 1) {
@@ -397,17 +402,17 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         affichage(rendu, font);
         affichage_panda(rendu, coPanda[maxiBambou]);
         xpanda = maxiBambou;
-        
+
     }
     else if (choix == 0) {
-       
+
         choix0();
         affichage(rendu, font);
         affichage_panda(rendu, coPanda[xpanda]);
-  
+
 
     }
-   
+
 }
 
 int main(int argn, char* argv[]) {
@@ -464,90 +469,101 @@ int main(int argn, char* argv[]) {
             break;
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_RETURN) {
-
-                choix = choixUser;
-                croissance(rendu, font);
+                if (Apli == true) {
+                    choix = choixUser;
+                    croissance(rendu, font);
+                }
             }
             if (event.key.keysym.sym == SDLK_r) {
+                if (Apli == true) {
+                    choix = choixUser;
 
-                choix = choixUser;
-
-                for (int i = 0; i < nb_bambous; i++) {
-                    tab[i].taille = 0;
-                    jours = 0;
-                    nbCoupe = 0;
-                    tab[i].cpt = 0;
+                    for (int i = 0; i < nb_bambous; i++) {
+                        tab[i].taille = 0;
+                        jours = 0;
+                        nbCoupe = 0;
+                        tab[i].cpt = 0;
+                    }
+                    affichage(rendu, font);
                 }
-                affichage(rendu, font);
             }
             if (event.key.keysym.sym == SDLK_RSHIFT) {
+                if (Apli == true) {
+                    choix = choixUser;
+                    boucle = true;
+                    while (boucle == true) {
+                        SDL_PollEvent(&events);
+                        SDL_Delay(600);
+                        if (events.key.keysym.sym == SDLK_s) {
+                            boucle = false;
+                        }
+                        else {
+                            croissance(rendu, font);
+                        }
 
-                choix = choixUser;
-                boucle = true;
-                while (boucle == true) {
-                    SDL_PollEvent(&events);
-                    SDL_Delay(600);
-                    if (events.key.keysym.sym == SDLK_s) {
-                        boucle = false;
                     }
-                    else {
-                        croissance(rendu, font);
-                    }
-
                 }
 
 
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
-                choix = 0;
-                if (jours == 0) {
-                    jours = 1;
-                }
-                affichage(rendu, font);
-                if (xpanda == 0) {
-                    
-                    affichage_panda(rendu, coPanda[7]);
-                    xpanda = 7;
-                    
-                }
-                else {
-                    affichage_panda(rendu, coPanda[xpanda-1]);
-                    xpanda = xpanda -1;
+                if (Apli == true) {
+                    choix = 0;
+                    if (jours == 0) {
+                        jours = 1;
+                    }
+                    affichage(rendu, font);
+                    if (xpanda == 0) {
+
+                        affichage_panda(rendu, coPanda[7]);
+                        xpanda = 7;
+
+                    }
+                    else {
+                        affichage_panda(rendu, coPanda[xpanda - 1]);
+                        xpanda = xpanda - 1;
+                    }
+
+                    SDL_Delay(300);
                 }
 
-                SDL_Delay(300);
-                
-               
+
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {
-                choix = 0;
-                if (jours == 0) {
-                    jours = 1;
-                }
-                affichage(rendu, font);
-                if (xpanda == 7 || xpanda == 8) {
+                if (Apli == true) {
+                    choix = 0;
+                    if (jours == 0) {
+                        jours = 1;
+                    }
+                    affichage(rendu, font);
+                    if (xpanda == 7 || xpanda == 8) {
 
-                    affichage_panda(rendu, coPanda[0]);
-                    xpanda = 0;
+                        affichage_panda(rendu, coPanda[0]);
+                        xpanda = 0;
+                    }
+                    else {
+                        affichage_panda(rendu, coPanda[xpanda + 1]);
+                        xpanda = xpanda + 1;
+                    }
+                    SDL_Delay(300);
                 }
-                else {
-                    affichage_panda(rendu, coPanda[xpanda + 1]);
-                    xpanda = xpanda + 1;
-                }
-                SDL_Delay(300);
-              
 
 
             }
 
             if (event.key.keysym.sym == SDLK_c) {
-
-                choix = 0;
-                croissance(rendu, font);
+                if (Apli == true) {
+                    choix = 0;
+                    croissance(rendu, font);
+                }
             }
 
-            if (event.key.keysym.sym == SDLK_ESCAPE && Menu == false) {
-                pause(rendu);
+            if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (Apli == true) {
+                    pause(rendu);
+                    Pause = true;
+                    Apli = false;
+                }
             }
 
             break;
@@ -558,6 +574,7 @@ int main(int argn, char* argv[]) {
                 if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>380 && event.button.y < 380 + 82) {
                     if (Menu == true) {
                         Menu = false;
+                        Apli = true;
                         affichage(rendu, font);
                         SDL_RenderPresent(rendu);
 
@@ -566,127 +583,167 @@ int main(int argn, char* argv[]) {
                 //Bouton exit menu
                 if (event.button.x > 497 && event.button.x < 497 + 258 && event.button.y>537 && event.button.y < 537 + 82) {
                     if (Menu == true) {
+                        Menu = false;
                         continuer = false;
                     }
                 }
                 //Bouton config menu
                 if (event.button.x > 1054 && event.button.x < 1054 + 136 && event.button.y>167 && event.button.y < 167 + 48) {
-                    config(rendu);
+                    if (Menu == true) {
+                        config(rendu);
+                        Config = true;
+                        Menu = false;
+                    }
                 }
                 if (event.button.x > 550 && event.button.x < 550 + 154 && event.button.y>48 && event.button.y < 93) {
-                    
-                    Menu = false;
-                    menu(rendu);
-
+                    if (Config == true) {
+                        Menu = true;
+                        Config = false;
+                        menu(rendu);
+                    }
                 }
 
                 //Config de bambou
 
                 if (event.button.x > 550 && event.button.x < 570 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 550;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 1;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 550;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 1;
+                    }
                 }
                 if (event.button.x > 620 && event.button.x < 650 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline1;
-                    underline1.x = 625;
-                    underline1.w = 19;
-                    underline1.h = 5;
-                    underline1.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline1);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 2;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline1;
+                        underline1.x = 625;
+                        underline1.w = 19;
+                        underline1.h = 5;
+                        underline1.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline1);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 2;
+                    }
                 }
                 if (event.button.x > 700 && event.button.x < 725 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 704;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 3;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 704;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 3;
+                    }
                 }
                 if (event.button.x > 780 && event.button.x < 803 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 783;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 4;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 783;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 4;
+                    }
                 }
                 if (event.button.x > 860 && event.button.x < 883 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 862;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 5;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 862;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 5;
+                    }
                 }
                 if (event.button.x > 940 && event.button.x < 963 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 943;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 6;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 943;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 6;
+                    }
                 }
                 if (event.button.x > 1020 && event.button.x < 1043 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 1021;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 7;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 1021;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 7;
+                    }
                 }
                 if (event.button.x > 1100 && event.button.x < 1123 && event.button.y>181 && event.button.y < 215) {
-                    config(rendu);
-                    SDL_Rect underline;
-                    underline.x = 1101;
-                    underline.w = 19;
-                    underline.h = 5;
-                    underline.y = 217;
-                    SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
-                    SDL_RenderFillRect(rendu, &underline);
-                    SDL_RenderPresent(rendu);
-                    nb_bambous = 8;
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 1101;
+                        underline.w = 19;
+                        underline.h = 5;
+                        underline.y = 217;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        nb_bambous = 8;
+                    }
                 }
+
+                //Menu Pause
+
                 if (event.button.x > 539 && event.button.x < 539 + 175 && event.button.y>232 && event.button.y < 232 + 50) {
-                    affichage(rendu, font);
-                    affichage_panda(rendu, coPanda[xpanda]);
+                    if (Pause == true) {
+                        affichage(rendu, font);
+                        Pause = false;
+                        Apli = true;
+                        if (jours == 0) {
+                            affichage_panda(rendu, 790);
+                        }
+                        else {
+                            affichage_panda(rendu, coPanda[xpanda]);
+                        }
+                    }
                 }
                 if (event.button.x > 539 && event.button.x < 539 + 175 && event.button.y>323 && event.button.y < 323 + 50) {
-                    config(rendu);
+                    if (Pause == true) {
+                        Pause = false;
+                        Config = true;
+                        config(rendu);
+                    }
                 }
                 if (event.button.x > 539 && event.button.x < 539 + 175 && event.button.y>414 && event.button.y < 414 + 50) {
-                    continuer = false;
+                    if (Pause == true) {
+                        continuer = false;
+                    }
                 }
             }
             break;

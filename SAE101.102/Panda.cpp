@@ -33,7 +33,8 @@ int nbCoupe = 0;
 int maxi = 0;
 int maxiBambou = 0;
 int fastBambou = 0;
-int choixUser = 2;
+int maxifastBambou = 0;
+int choixUser = 1;
 int choix = choixUser;
 bool boucle = false;
 int xpanda;
@@ -572,11 +573,13 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     texteHautMin(rendu, font);
     texteNBcoupe(rendu, font);
 
+    SDL_DestroyTexture(pTextureImagefond);
+
     Graphique(rendu);
 
     bambou(rendu, font);
 
-    if (choix == 2) {
+    if (choix == 2 || choix == 3) {
         init_ligne_coupe(rendu, x, font);
     }
 
@@ -637,6 +640,40 @@ void choix2(SDL_Renderer* rendu, TTF_Font* font) {
     }
 }
 
+void choix3(SDL_Renderer* rendu, TTF_Font* font) {
+    maxifastBambou = 0;
+    
+    if (jours > 0) {
+
+        for (int i = 0; i < nb_bambous; i++) {
+            if ((tab[i].taille >= x  && ((tab[i].croissance * 6) + 5) > ((tab[maxifastBambou].croissance * 6) + 5)) || tab[i].taille > tab[maxifastBambou].taille) {
+  
+                maxifastBambou = i;
+                
+            }
+        }
+
+        tab[maxifastBambou].taille = 0;
+        tab[maxifastBambou].cpt = 0;
+        nbCoupe++;
+        xpanda = maxifastBambou;
+
+        
+    }
+}
+void jauge(SDL_Renderer* rendu, int x) {
+    SDL_Rect jauge;
+    jauge.x = LARGEUR - 9;
+    jauge.w = 10;
+    jauge.h = 10 * x;
+    jauge.y = HAUTEUR - jauge.h;
+    SDL_SetRenderDrawColor(rendu, 0, 0, 255, 255);
+    SDL_RenderFillRect(rendu, &jauge);
+    SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255);
+    SDL_RenderDrawRect(rendu, &jauge);
+    SDL_RenderPresent(rendu);
+}
+
 void choix0() {
 
     tab[xpanda].taille = 0;
@@ -685,6 +722,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         if (batterie < 6) {
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[8]); 
+            jauge(rendu, nbCoupe);
             while (batterie < 100) {
                 SDL_Delay(150);
                 batterie = batterie + 10;
@@ -698,6 +736,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             choix1();
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[maxiBambou]);
+            jauge(rendu, nbCoupe);
             xpanda = maxiBambou;
         }
 
@@ -706,6 +745,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         if (batterie < 6) {
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[8]);
+            jauge(rendu, nbCoupe);
             while (batterie < 100) {
                 SDL_Delay(150);
                 batterie = batterie + 10;
@@ -718,6 +758,7 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             
             choix2(rendu, font);
             affichage(rendu, font);
+            jauge(rendu, nbCoupe);
             if (xpanda == 9) {
                 affichage_panda(rendu, 790);
                
@@ -732,6 +773,38 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         }
 
     }
+    else if (choix == 3) {
+        if (batterie < 6) {
+            affichage(rendu, font);
+            affichage_panda(rendu, coPanda[8]);
+            jauge(rendu, nbCoupe);
+            while (batterie < 100) {
+                SDL_Delay(150);
+                batterie = batterie + 10;
+                batterieAuto(rendu);
+            }
+            batterie = 100;
+
+        }
+        else {
+
+            choix3(rendu, font);
+            affichage(rendu, font);
+            jauge(rendu, nbCoupe);
+            if (xpanda == 9) {
+                affichage_panda(rendu, 790);
+
+                xpanda = 8;
+            }
+            else {
+                batterie = batterie - 5;
+                affichage_panda(rendu, coPanda[maxifastBambou]);
+                xpanda = maxifastBambou;
+
+            }
+        }
+
+    }
     else if (choix == 0) {
         if (batterie == 0) {
             batterieOff = true;
@@ -741,14 +814,162 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             choix0();
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[xpanda]);
+            jauge(rendu, nbCoupe);
             
         }
     }
     else {
         affichage(rendu, font);
         affichage_panda(rendu, coPanda[8]);
+        jauge(rendu, nbCoupe);
+
     }
 
+}
+
+void affiche1(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "1", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y-1].croissance = 1;
+    tab[y-1].taille = 0;
+    tab[y-1].cpt = 0;
+}
+void affiche2(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "2", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 2;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche3(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "3", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 3;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche4(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "4", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 4;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche5(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "5", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 5;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche6(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "6", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 6;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche7(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "7", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 7;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche8(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "8", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 8;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
+}
+void affiche9(SDL_Renderer* rendu, int x, TTF_Font* font, int y) {
+    SDL_Color black = { 0,0,0 };
+    SDL_Rect positionTexte;
+    positionTexte.x = x;
+    positionTexte.y = 310;
+    SDL_Texture* texture = loadText(rendu, "9", black, font);
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    positionTexte.w *= 1.8;
+    positionTexte.h *= 1.8;
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    SDL_RenderPresent(rendu);
+    SDL_DestroyTexture(texture);
+    tab[y - 1].croissance = 9;
+    tab[y - 1].taille = 0;
+    tab[y - 1].cpt = 0;
 }
 
 int main(int argn, char* argv[]) {
@@ -867,7 +1088,7 @@ int main(int argn, char* argv[]) {
                         affichage_panda(rendu, coPanda[xpanda - 1]);
                         xpanda = xpanda - 1;
                     }
-
+                    jauge(rendu, nbCoupe);
                     SDL_Delay(300);
                 }
             }
@@ -891,6 +1112,7 @@ int main(int argn, char* argv[]) {
                         affichage_panda(rendu, coPanda[xpanda + 1]);
                         xpanda = xpanda + 1;
                     }
+                    jauge(rendu, nbCoupe);
                     SDL_Delay(300);
                 }
 
@@ -921,6 +1143,7 @@ int main(int argn, char* argv[]) {
                         batterieAuto(rendu);
                     }
                     batterie = 100;
+                    jauge(rendu, nbCoupe);
                 }
 
 
@@ -975,11 +1198,20 @@ int main(int argn, char* argv[]) {
                         Menu = false;
                     }
                 }
-                if (event.button.x > 550 && event.button.x < 550 + 154 && event.button.y>48 && event.button.y < 93) {
+                if (event.button.x > 418 && event.button.x < 418 + 154 && event.button.y>48 && event.button.y < 93) {
                     if (Config == true) {
                         Menu = true;
                         Config = false;
                         menu(rendu);
+                    }
+                }
+
+                if (event.button.x > 674 && event.button.x < 674 + 154 && event.button.y>48 && event.button.y < 93) {
+                    if (Config == true) {
+                        Config = false;
+                        Apli = true;
+                        affichage(rendu, font);
+                        SDL_RenderPresent(rendu);
                     }
                 }
 
@@ -1113,16 +1345,512 @@ int main(int argn, char* argv[]) {
                         }
                     }
                 }
-                if (event.button.x > 539 && event.button.x < 539 + 175 && event.button.y>323 && event.button.y < 323 + 50) {
-                    if (Pause == true) {
-                        Pause = false;
-                        Config = true;
-                        config(rendu);
-                    }
-                }
+                
                 if (event.button.x > 539 && event.button.x < 539 + 175 && event.button.y>414 && event.button.y < 414 + 50) {
                     if (Pause == true) {
                         continuer = false;
+                    }
+                }
+                //Config ModeDeJeu
+
+                if (event.button.x > 528 && event.button.x < 668 && event.button.y>453 && event.button.y < 476) {
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 530;
+                        underline.w = 137;
+                        underline.h = 5;
+                        underline.y = 485;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        choixUser = 1;
+                        choix = choixUser;
+                    }
+                }
+
+                if (event.button.x > 727 && event.button.x < 905 && event.button.y>453 && event.button.y < 476) {
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 727;
+                        underline.w = 905 - 725;
+                        underline.h = 5;
+                        underline.y = 485;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        choixUser = 2;
+                        choix = choixUser;
+                    }
+                }
+
+                if (event.button.x > 964 && event.button.x < 1061 && event.button.y>453 && event.button.y < 476) {
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 964;
+                        underline.w = 1061 - 962;
+                        underline.h = 5;
+                        underline.y = 485;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+                        choixUser = 3;
+                        choix = choixUser;
+                    }
+                }
+
+                //ConfigCroissance
+
+                if (event.button.x > 550 && event.button.x < 623 && event.button.y>290 && event.button.y < 367) {
+                  
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 574;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp1 = true;
+                        while (temp1 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 0);
+                                temp1 = false;
+                            }
+                        }
+
+                    }
+                }
+                if (event.button.x > 635 && event.button.x < 707 && event.button.y>290 && event.button.y < 367) {
+                   
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 659;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp2 = true;
+                        while (temp2 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 1);
+                                temp2 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 724 && event.button.x < 797 && event.button.y>290 && event.button.y < 367) {
+                   
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 745;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp3 = true;
+                        while (temp3 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 3);
+                                temp3 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 808 && event.button.x < 881 && event.button.y>290 && event.button.y < 367) {
+                    
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 829;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp3 = true;
+                        while (temp3 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 4);
+                                temp3 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 892 && event.button.x < 965 && event.button.y>290 && event.button.y < 367) {
+                   
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 913;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp3 = true;
+                        while (temp3 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 5);
+                                temp3 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 975 && event.button.x < 1048 && event.button.y>290 && event.button.y < 367) {
+                   
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 997;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp3 = true;
+                        while (temp3 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 6);
+                                temp3 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 1061 && event.button.x < 1133 && event.button.y>290 && event.button.y < 367) {
+                    
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 1082;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp3 = true;
+                        while (temp3 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 7);
+                                temp3 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 1145 && event.button.x < 1219 && event.button.y>290 && event.button.y < 367) {
+                    
+                    if (Config == true) {
+                        config(rendu);
+                        SDL_Rect underline;
+                        underline.x = 1166;
+                        underline.w = 30;
+                        underline.h = 5;
+                        underline.y = 359;
+                        SDL_SetRenderDrawColor(rendu, 255, 100, 100, 255);
+                        SDL_RenderFillRect(rendu, &underline);
+                        SDL_RenderPresent(rendu);
+
+                        bool temp3 = true;
+                        while (temp3 == true) {
+                            SDL_PollEvent(&events);
+                            if (events.key.keysym.sym == SDLK_1) {
+                                affiche1(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_2) {
+                                affiche2(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_3) {
+                                affiche3(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_4) {
+                                affiche4(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_5) {
+                                affiche5(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_6) {
+                                affiche6(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_7) {
+                                affiche7(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_8) {
+                                affiche8(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                            if (events.key.keysym.sym == SDLK_9) {
+                                affiche9(rendu, underline.x + 3, font, 8);
+                                temp3 = false;
+                            }
+                        }
+                    }
+                }
+                if (event.button.x > 539 && event.button.x < 539 + 175 && event.button.y>323 && event.button.y < 323 + 50) {
+                    if (Pause == true) {
+                        Pause = false;
+                        config(rendu);
+                        SDL_Delay(500);
+                        Config = true;
+
                     }
                 }
             }

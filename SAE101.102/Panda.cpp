@@ -32,11 +32,13 @@ int jours = 0;
 int nbCoupe = 0;
 int maxi = 0;
 int maxiBambou = 0;
-int choixUser = 1;
-int choix = 1;
+int fastBambou = 0;
+int choixUser = 2;
+int choix = choixUser;
 bool boucle = false;
 int xpanda;
 int batterie = 100;
+int   x = 350;
 
 struct bambous
 {
@@ -274,6 +276,32 @@ void init_ligne_max(SDL_Renderer* rendu, int taille, TTF_Font* font) {
     positionTexte.y = HAUTEUR - taille - 15;
 
     SDL_Texture* texture = loadText(rendu, "Max", rouge, font);
+
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+
+    positionTexte.w *= 0.6;
+    positionTexte.h *= 0.6;
+
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+
+
+    SDL_DestroyTexture(texture);
+
+}
+
+void init_ligne_coupe(SDL_Renderer* rendu, int taille, TTF_Font* font) {
+
+    SDL_SetRenderDrawColor(rendu, 156, 100, 55, 255);
+    SDL_RenderDrawLine(rendu, 0, HAUTEUR - taille, LARGEUR, HAUTEUR - taille);
+
+    SDL_Color rouge = { 156, 100, 55 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+
+    //on place le texte au point (100,100)
+    positionTexte.x = LARGEUR - 32;
+    positionTexte.y = HAUTEUR - taille - 15;
+
+    SDL_Texture* texture = loadText(rendu, "Coupe", rouge, font);
 
     SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
 
@@ -548,6 +576,9 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
 
     bambou(rendu, font);
 
+    if (choix == 2) {
+        init_ligne_coupe(rendu, x, font);
+    }
 
     if (jours == 0) {
         affichage_panda(rendu, 790);
@@ -574,12 +605,66 @@ void choix1() {
     }
 }
 
+void choix2(SDL_Renderer* rendu, TTF_Font* font) {
+    fastBambou = 0;
+    if (jours > 0) {
+
+        for (int i = 0; i < nb_bambous; i++) {
+            if (tab[i].taille >= x && ((tab[i].croissance * 6) + 5) > ((tab[fastBambou].croissance * 6) + 5)) {
+                fastBambou = i;
+            }
+        }
+        if (fastBambou == 0) {
+            if (tab[0].taille >= x) {
+                tab[fastBambou].taille = 0;
+                tab[fastBambou].cpt = 0;
+                nbCoupe++;
+                xpanda = fastBambou;
+            }
+            else {
+                
+                xpanda = 9;
+            }
+        }
+        else {
+
+            tab[fastBambou].taille = 0;
+            tab[fastBambou].cpt = 0;
+            nbCoupe++;
+            xpanda = fastBambou;
+
+        }
+    }
+}
+
 void choix0() {
 
     tab[xpanda].taille = 0;
     tab[xpanda].cpt = 0;
     nbCoupe++;
 
+}
+
+void GameOver(SDL_Renderer* rendu, TTF_Font* font) {
+
+    SDL_Color rouge = { 255,0,0 }; //on définit une couleur de texte
+    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
+    //on place le texte au point (100,100)
+    positionTexte.x = 30;
+    positionTexte.y = 250;
+    //on crée une texture à partir du texte, de sa couleur, et de la fonte
+    SDL_Texture* texture = loadText(rendu, "Game Over", rouge, font);
+    //on maj le rectangle couvrant cette texture
+    SDL_QueryTexture(texture, NULL, NULL, &positionTexte.w, &positionTexte.h);
+    //si on veut modifier le cadre du texte
+    positionTexte.w *= 8;
+    positionTexte.h *= 8;
+    //on copie la texture dans le rendu
+    SDL_RenderCopy(rendu, texture, NULL, &positionTexte);
+    //on met à jour le rendu
+    SDL_RenderPresent(rendu);
+    //on détruit la texture
+    SDL_DestroyTexture(texture);
 }
 
 
@@ -617,6 +702,36 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
         }
 
     }
+    else if (choix == 2) {
+        if (batterie < 6) {
+            affichage(rendu, font);
+            affichage_panda(rendu, coPanda[8]);
+            while (batterie < 100) {
+                SDL_Delay(150);
+                batterie = batterie + 10;
+                batterieAuto(rendu);
+            }
+            batterie = 100;
+
+        }
+        else {
+            
+            choix2(rendu, font);
+            affichage(rendu, font);
+            if (xpanda == 9) {
+                affichage_panda(rendu, 790);
+               
+                xpanda = 8;
+            }
+            else {
+                batterie = batterie - 5;
+                affichage_panda(rendu, coPanda[fastBambou]);
+                xpanda = fastBambou;
+                
+            }
+        }
+
+    }
     else if (choix == 0) {
         if (batterie == 0) {
             batterieOff = true;
@@ -626,7 +741,12 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
             choix0();
             affichage(rendu, font);
             affichage_panda(rendu, coPanda[xpanda]);
+            
         }
+    }
+    else {
+        affichage(rendu, font);
+        affichage_panda(rendu, coPanda[8]);
     }
 
 }
@@ -702,6 +822,9 @@ int main(int argn, char* argv[]) {
                         batterie = 100;
                         batterieOff = false;
                     }
+                    maxiBambou = 0;
+                    maxi = 0;
+                    fastBambou = 0;
                     affichage(rendu, font);
                 }
             }
@@ -718,7 +841,6 @@ int main(int argn, char* argv[]) {
                         else {
                             croissance(rendu, font);
                         }
-
                     }
                 }
 
@@ -727,6 +849,7 @@ int main(int argn, char* argv[]) {
             if (event.key.keysym.sym == SDLK_LEFT) {
                 if (batterie == 0) {
                     batterieOff = true;
+                    GameOver(rendu, font);
                 }
                 if (Apli == true && batterieOff == false) {
                     choix = 0;
@@ -751,6 +874,7 @@ int main(int argn, char* argv[]) {
             if (event.key.keysym.sym == SDLK_RIGHT) {
                 if (batterie == 0) {
                     batterieOff = true;
+                    GameOver(rendu, font);
                 }
                 if (Apli == true && batterieOff == false) {
                     choix = 0;
@@ -777,6 +901,7 @@ int main(int argn, char* argv[]) {
             if (event.key.keysym.sym == SDLK_DOWN) {
                 if (batterie == 0) {
                     batterieOff = true;
+                    GameOver(rendu, font);
                 }
                 if (Apli == true && batterieOff == false) {
                     choix = 0;
@@ -805,6 +930,7 @@ int main(int argn, char* argv[]) {
             if (event.key.keysym.sym == SDLK_c) {
                 if (batterie == 0) {
                     batterieOff = true;
+                    GameOver(rendu, font);
                 }
                 if (Apli == true && batterieOff == false) {
                     choix = 0;

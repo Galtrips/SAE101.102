@@ -217,78 +217,6 @@ void textcoupe(SDL_Renderer* rendu, TTF_Font* font) {
     SDL_DestroyTexture(text);
 }
 
-void textjours(SDL_Renderer* rendu, TTF_Font* font) {
-
-    SDL_Color blanche = { 0,0,0 }; //on définit une couleur de texte
-
-    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
-    positionTexte.x = LARGEUR_TOTALE - 430;
-    positionTexte.y = 20;
-    //on place le texte au point (100,100)
-    char score_text[500];
-
-    ofstream sortie("option.txt", ios::trunc);
-    sortie << "Jours : " << jours << endl;
-    sortie.close();
-    
-    ifstream entrer("option.txt", ios::in);
-    entrer.getline(score_text, 500);
-      
-    entrer.close();
-
-    //on crée une texture à partir du texte, de sa couleur, et de la fonte
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, score_text, blanche);
-    SDL_Texture* text = SDL_CreateTextureFromSurface(rendu, textSurface);
-    //on maj le rectangle couvrant cette texture
-
-    SDL_QueryTexture(text, NULL, NULL, &positionTexte.w, &positionTexte.h);
-    //si on veut modifier le cadre du texte
-    positionTexte.w *= 1.5;
-    positionTexte.h *= 1.5;
-    //on copie la texture dans le rendu
-    SDL_RenderCopy(rendu, text, NULL, &positionTexte);
-    //on met à jour le rendu
-    SDL_RenderPresent(rendu);
-    //on détruit la texture
-    SDL_DestroyTexture(text);
-}
-
-void textcoupe(SDL_Renderer* rendu, TTF_Font* font) {
-
-    SDL_Color blanche = { 0,0,255 }; //on définit une couleur de texte
-
-    SDL_Rect positionTexte; //rectangle définissant le positionnement du texte, et sa taille
-    positionTexte.x = LARGEUR_TOTALE - 185;
-    positionTexte.y = 300;
-    //on place le texte au point (100,100)
-    char score_text[500];
-
-    ofstream sortie("option.txt2", ios::trunc);
-    sortie << "Nb Coupe : " << nbCoupe << endl;
-    sortie.close();
-
-    ifstream entrer("option.txt2", ios::in);
-    entrer.getline(score_text, 500);
-
-    entrer.close();
-
-    //on crée une texture à partir du texte, de sa couleur, et de la fonte
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, score_text, blanche);
-    SDL_Texture* text = SDL_CreateTextureFromSurface(rendu, textSurface);
-    //on maj le rectangle couvrant cette texture
-
-    SDL_QueryTexture(text, NULL, NULL, &positionTexte.w, &positionTexte.h);
-    //si on veut modifier le cadre du texte
-    positionTexte.w *= 1;
-    positionTexte.h *= 1;
-    //on copie la texture dans le rendu
-    SDL_RenderCopy(rendu, text, NULL, &positionTexte);
-    //on met à jour le rendu
-    SDL_RenderPresent(rendu);
-    //on détruit la texture
-    SDL_DestroyTexture(text);
-}
-
 void texteLégende(SDL_Renderer* rendu, TTF_Font* font) {
 
     SDL_Color blanche = { 255,255,255 }; //on définit une couleur de texte
@@ -676,22 +604,6 @@ void charger() {
     entrer.close();
 }
 
-void charger() {
-   ifstream entrer("save.txt", ios::in);
-    char lignes[10];
-    if (!entrer.eof()) {
-        entrer.getline(lignes, 10, ';');
-        nb_bambous = atoi(lignes);
-        for (int i = 0; i < 8; i++) {
-            entrer.getline(lignes, 10, ';');
-            tab[i].croissance = atoi(lignes);
-        }
-        entrer.getline(lignes, 10, ';');
-        choixUser = atoi(lignes);
-    }
-    entrer.close();
-}
-
 void son(SDL_Renderer* rendu) {
     // on importe une image de son
     SDL_Surface* son = IMG_Load("son.png");
@@ -755,12 +667,12 @@ void affichage(SDL_Renderer* rendu, TTF_Font* font) {
     maxCourbe(rendu);
 
     if (mute == false) {
-       
+
         sonOff(rendu);
-     
+
     }
     else if (mute == true) {
- 
+
         son(rendu);
 
     }
@@ -1334,7 +1246,7 @@ int main(int argn, char* argv[]) {
                     maxi = 0;
                     fastBambou = 0;
                     affichage(rendu, font);
-                   
+
                 }
             }
             if (event.key.keysym.sym == SDLK_RSHIFT && batterieOff == false) {
@@ -2171,7 +2083,7 @@ int main(int argn, char* argv[]) {
                         affichage(rendu, font);
                     }
                     else if (mute == false && Apli == true) {
-                        
+
                         Mix_ResumeMusic();
                         mute = true;
                         affichage(rendu, font);

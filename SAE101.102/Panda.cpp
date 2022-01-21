@@ -44,6 +44,7 @@ bool boucle = false;
 int xpanda;
 int batterie = 100;
 int x = 300;
+int y;
 int indGraph = 0;
 bool charging = false;
 bool mute = true;

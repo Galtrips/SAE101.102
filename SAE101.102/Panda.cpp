@@ -851,14 +851,14 @@ void croissance(SDL_Renderer* rendu, TTF_Font* font) {
     }
 
     points[indGraph].x = indGraph * 3 + 1005;
-    points[indGraph].y = HAUTEUR - (moyenne % 100) - 150;
+    points[indGraph].y = HAUTEUR - ((moyenne * 100) / 500) - 90;
 
 
     pointsmax[indGraph].x = indGraph * 3 + 1005;
-    pointsmax[indGraph].y = HAUTEUR - (maximum % 100) - 250;
+    pointsmax[indGraph].y = HAUTEUR - ((maximum * 100) / 500) - 190;
 
     pointsmin[indGraph].x = indGraph * 3 + 1005;
-    pointsmin[indGraph].y = HAUTEUR - (minimum % 100) - 50;
+    pointsmin[indGraph].y = HAUTEUR - ((minimum * 100)/ 500) - 10;
 
 
 

@@ -19,7 +19,6 @@ SDL_Point points[100];
 SDL_Point pointsmax[100];
 SDL_Point pointsmin[100];
 
-
 const int LARGEUR = 1000; //largeur fenetre
 const int LARGEUR_TOTALE = 1250;//largeur fenetre
 const int HAUTEUR = 700;  //hauteur fenetre
